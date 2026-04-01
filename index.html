@@ -1,53 +1,1597 @@
 <!DOCTYPE html>
-<html lang="en-US">
-  <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Doudoush — Création</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <style>
+    /* ── RESET ─────────────────────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-<!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>doudoushco.github.io | doudoushco</title>
-<meta name="generator" content="Jekyll v3.10.0" />
-<meta property="og:title" content="doudoushco.github.io" />
-<meta property="og:locale" content="en_US" />
-<meta name="description" content="Portfolio Doudoush" />
-<meta property="og:description" content="Portfolio Doudoush" />
-<link rel="canonical" href="https://doudoushco.github.io/" />
-<meta property="og:url" content="https://doudoushco.github.io/" />
-<meta property="og:site_name" content="doudoushco" />
-<meta property="og:type" content="website" />
-<meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="doudoushco.github.io" />
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebSite","description":"Portfolio Doudoush","headline":"doudoushco.github.io","name":"doudoushco","url":"https://doudoushco.github.io/"}</script>
-<!-- End Jekyll SEO tag -->
+    :root {
+      --bg:       #FEFDF8;
+      --bg2:      #F7F4EC;
+      --white:    #FFFFFF;
+      --text:     #1C1C1C;
+      --muted:    #7A7A7A;
+      --coral:    #FF6B6B;
+      --yellow:   #FFD166;
+      --teal:     #06C49A;
+      --lavender: #C77DFF;
+      --border:   rgba(0,0,0,0.09);
+      --shadow:   0 6px 30px rgba(0,0,0,0.07);
+      --radius:   16px;
+    }
 
-    <link rel="stylesheet" href="/assets/css/style.css?v=6a8a9e115b4b0a6a983c02a4e9f9121b580452e1">
-    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+    html { scroll-behavior: smooth; }
 
-<!-- Setup Google Analytics -->
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
 
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg2); }
+    ::-webkit-scrollbar-thumb { background: var(--coral); border-radius: 5px; }
 
+    /* ── NAVBAR ─────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.1rem 6%;
+      background: rgba(254,253,248,0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
 
-<!-- You can set your favicon here -->
-<!-- link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" -->
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.45rem;
+      font-weight: 900;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.01em;
+    }
 
-<!-- end custom head snippets -->
+    .nav-logo .dot { color: var(--coral); }
 
-  </head>
-  <body>
-    <div class="container-lg px-3 my-5 markdown-body">
-      
-      <h1><a href="https://doudoushco.github.io/">doudoushco</a></h1>
-      
+    .nav-contact {
+      background: var(--coral);
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.55rem 1.4rem;
+      border-radius: 50px;
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      transition: background 0.3s, transform 0.2s;
+    }
 
-      <h1 id="doudoushcogithubio">doudoushco.github.io</h1>
-<p>Portfolio Doudoush</p>
+    .nav-contact:hover {
+      background: #e85555;
+      transform: translateY(-2px);
+    }
 
+    /* ── HERO ───────────────────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 8rem 6% 5rem;
+    }
 
-      
+    .hero-eyebrow {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--coral);
+      margin-bottom: 1.2rem;
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3.2rem, 8vw, 6.8rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--coral);
+    }
+
+    .hero-subtitle {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 520px;
+      margin: 1rem auto 0;
+      font-weight: 300;
+    }
+
+    /* Welcome paragraph */
+    .hero-welcome {
+      margin: 2rem auto 0;
+      max-width: 600px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--yellow);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 1.2rem 1.8rem;
+      text-align: left;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-welcome p {
+      font-size: 1rem;
+      color: var(--text);
+      line-height: 1.8;
+    }
+
+    .hero-welcome p strong { color: var(--coral); }
+
+    /* Discipline pills */
+    .hero-pills {
+      display: flex; gap: 0.75rem;
+      flex-wrap: wrap; justify-content: center;
+      margin-top: 2.5rem;
+    }
+
+    .pill {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.55rem 1.3rem;
+      border-radius: 50px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      border: 1.5px solid transparent;
+      text-decoration: none;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+
+    .pill:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
+
+    .pill-coral   { background: rgba(255,107,107,0.1); color: #e05050; border-color: rgba(255,107,107,0.3); }
+    .pill-yellow  { background: rgba(255,209,102,0.15); color: #b58900; border-color: rgba(255,209,102,0.4); }
+    .pill-teal    { background: rgba(6,196,154,0.1); color: #059e7d; border-color: rgba(6,196,154,0.3); }
+
+    /* Scroll hint */
+    .scroll-hint {
+      margin-top: 3.5rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      display: flex; flex-direction: column; align-items: center; gap: 0.6rem;
+      animation: float 2.5s ease-in-out infinite;
+    }
+
+    .scroll-arrow {
+      width: 28px; height: 28px;
+      border: 2px solid rgba(0,0,0,0.15);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; color: var(--muted);
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(6px); }
+    }
+
+    /* ── SECTION COMMONS ────────────────────────────────────────── */
+    .section-wrap { padding: 5.5rem 6%; }
+
+    .section-header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+      margin-bottom: 2.5rem;
+      padding-bottom: 1.2rem;
+      border-bottom: 1.5px solid var(--border);
+    }
+
+    .section-header-left .badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.85rem;
+      border-radius: 50px;
+      margin-bottom: 0.5rem;
+      display: inline-block;
+    }
+
+    .badge-coral   { background: rgba(255,107,107,0.12); color: #e05050; }
+    .badge-yellow  { background: rgba(255,209,102,0.2); color: #b58900; }
+    .badge-teal    { background: rgba(6,196,154,0.12); color: #059e7d; }
+
+    .section-title-main {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--text);
+    }
+
+    /* ── ADD BUTTON ─────────────────────────────────────────────── */
+    .btn-add {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      padding: 0.6rem 1.3rem;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: 2px dashed;
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.25s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-add-coral { border-color: var(--coral); color: var(--coral); }
+    .btn-add-coral:hover { background: var(--coral); color: white; }
+
+    .btn-add-yellow { border-color: #d4a800; color: #d4a800; }
+    .btn-add-yellow:hover { background: var(--yellow); color: #1C1C1C; }
+
+    .btn-add-teal { border-color: var(--teal); color: var(--teal); }
+    .btn-add-teal:hover { background: var(--teal); color: white; }
+
+    /* ── VIDEO CARDS ────────────────────────────────────────────── */
+    #montage { background: var(--bg); }
+
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .video-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .video-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.11);
+    }
+
+    .video-thumb {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: linear-gradient(135deg, #FFE8E8, #FFD6B0);
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+
+    .play-btn {
+      width: 52px; height: 52px;
+      background: var(--coral);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 1.2rem;
+      box-shadow: 0 4px 16px rgba(255,107,107,0.4);
+      transition: transform 0.3s;
+      cursor: pointer;
+    }
+
+    .video-card:hover .play-btn { transform: scale(1.12); }
+
+    .video-duration {
+      position: absolute; bottom: 0.7rem; right: 0.8rem;
+      background: rgba(0,0,0,0.6);
+      color: #fff; font-size: 0.72rem; font-weight: 600;
+      padding: 0.2rem 0.5rem; border-radius: 4px;
+    }
+
+    .video-cat-tag {
+      position: absolute; top: 0.7rem; left: 0.8rem;
+      background: var(--coral);
+      color: white; font-size: 0.68rem; font-weight: 700;
+      padding: 0.2rem 0.6rem; border-radius: 4px;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+
+    .video-body { padding: 1.2rem; }
+
+    .video-body h3 {
+      font-size: 1rem; font-weight: 600;
+      margin-bottom: 0.4rem; color: var(--text);
+    }
+
+    .video-body p { font-size: 0.85rem; color: var(--muted); }
+
+    .video-link {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      margin-top: 0.8rem;
+      font-size: 0.82rem; font-weight: 600;
+      color: var(--coral); text-decoration: none;
+      transition: gap 0.25s;
+    }
+
+    .video-link:hover { gap: 0.6rem; }
+
+    .card-actions {
+      display: flex; gap: 0.5rem; margin-top: 0.9rem;
+    }
+
+    .btn-delete {
+      font-size: 0.78rem; color: #ccc; background: none;
+      border: 1px solid #eee; border-radius: 6px;
+      padding: 0.3rem 0.7rem; cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .btn-delete:hover { color: var(--coral); border-color: var(--coral); }
+
+    /* ── PHOTO CARDS ────────────────────────────────────────────── */
+    #photo { background: var(--bg2); }
+
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.2rem;
+    }
+
+    .photo-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+    }
+
+    .photo-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.11);
+    }
+
+    .photo-frame {
+      aspect-ratio: 4/3;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem;
+      position: relative; overflow: hidden;
+    }
+
+    .photo-frame img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s;
+    }
+
+    .photo-card:hover .photo-frame img { transform: scale(1.05); }
+
+    .photo-frame .photo-emoji {
+      font-size: 3rem;
+    }
+
+    .photo-info { padding: 1rem; }
+    .photo-info h3 { font-size: 0.92rem; font-weight: 600; }
+    .photo-info p { font-size: 0.8rem; color: var(--muted); margin-top: 0.3rem; }
+
+    /* ── ARTICLES ───────────────────────────────────────────────── */
+    #articles { background: var(--bg); }
+
+    /* Link insert area */
+    .link-insert-area {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 2.5rem;
+      box-shadow: var(--shadow);
+    }
+
+    .link-insert-area h4 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 1rem;
+    }
+
+    .link-insert-row {
+      display: flex; gap: 0.75rem; flex-wrap: wrap;
+    }
+
+    .link-insert-row input {
+      flex: 1; min-width: 200px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 0.7rem 1rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      color: var(--text);
+      background: var(--bg);
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .link-insert-row input:focus { border-color: var(--teal); }
+
+    .btn-add-link {
+      background: var(--teal);
+      color: white;
+      border: none;
+      padding: 0.7rem 1.4rem;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .btn-add-link:hover { background: #04a881; transform: translateY(-2px); }
+
+    .saved-links { margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.6rem; }
+
+    .saved-link-chip {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(6,196,154,0.1);
+      border: 1px solid rgba(6,196,154,0.3);
+      border-radius: 50px;
+      padding: 0.3rem 0.85rem;
+      font-size: 0.8rem; color: #059e7d;
+    }
+
+    .saved-link-chip a {
+      color: inherit; text-decoration: none;
+      max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+
+    .saved-link-chip a:hover { text-decoration: underline; }
+
+    .chip-del {
+      background: none; border: none;
+      cursor: pointer; color: #aaa;
+      font-size: 0.9rem; line-height: 1;
+      transition: color 0.2s;
+    }
+
+    .chip-del:hover { color: var(--coral); }
+
+    /* Article cards */
+    .articles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .article-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.8rem;
+      box-shadow: var(--shadow);
+      transition: transform 0.3s, box-shadow 0.3s;
+      position: relative;
+    }
+
+    .article-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.11);
+    }
+
+    .article-card-top-line {
+      position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      border-radius: var(--radius) var(--radius) 0 0;
+      background: linear-gradient(90deg, var(--teal), var(--yellow));
+    }
+
+    .article-category-badge {
+      display: inline-block;
+      background: rgba(6,196,154,0.1);
+      color: #059e7d;
+      font-size: 0.72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      padding: 0.25rem 0.75rem; border-radius: 50px;
+      margin-bottom: 1rem;
+    }
+
+    .article-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem; font-weight: 700;
+      line-height: 1.35; margin-bottom: 0.75rem;
+    }
+
+    .article-card .article-text {
+      font-size: 0.88rem; color: var(--muted);
+      line-height: 1.7; margin-bottom: 1rem;
+    }
+
+    .article-meta {
+      display: flex; align-items: center; gap: 0.6rem;
+      font-size: 0.78rem; color: var(--muted);
+    }
+
+    .meta-dot { width: 3px; height: 3px; background: var(--teal); border-radius: 50%; }
+
+    .read-more {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      color: var(--teal); font-size: 0.83rem; font-weight: 600;
+      text-decoration: none; margin-top: 1rem;
+      transition: gap 0.25s;
+    }
+
+    .read-more:hover { gap: 0.6rem; }
+
+    /* ── CONTACT ────────────────────────────────────────────────── */
+    #contact {
+      background: var(--bg2);
+      padding: 5.5rem 6%;
+      text-align: center;
+    }
+
+    .contact-eyebrow {
+      font-size: 0.78rem; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--coral); margin-bottom: 0.8rem;
+    }
+
+    #contact h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700; margin-bottom: 0.8rem;
+    }
+
+    #contact > p {
+      color: var(--muted); margin-bottom: 3rem;
+    }
+
+    .contact-card {
+      max-width: 580px; margin: 0 auto;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3rem;
+      box-shadow: var(--shadow);
+    }
+
+    .contact-form { display: flex; flex-direction: column; gap: 1.1rem; text-align: left; }
+
+    .form-label {
+      font-size: 0.78rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--muted); margin-bottom: 0.4rem;
+      display: block;
+    }
+
+    .form-input, .form-textarea {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 0.8rem 1rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      color: var(--text);
+      background: var(--bg);
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .form-input:focus, .form-textarea:focus { border-color: var(--coral); }
+
+    .form-textarea { resize: vertical; min-height: 120px; }
+
+    .btn-submit {
+      background: var(--coral);
+      color: white;
+      border: none; border-radius: 10px;
+      padding: 0.9rem; font-family: 'Inter', sans-serif;
+      font-size: 0.95rem; font-weight: 700;
+      cursor: pointer; letter-spacing: 0.02em;
+      transition: background 0.3s, transform 0.2s;
+      margin-top: 0.4rem;
+    }
+
+    .btn-submit:hover { background: #e85555; transform: translateY(-2px); }
+
+    .social-row {
+      display: flex; gap: 0.75rem; justify-content: center;
+      margin-top: 2rem;
+    }
+
+    .social-icon {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; text-decoration: none;
+      transition: all 0.3s;
+    }
+
+    .social-icon:hover { background: var(--coral); border-color: var(--coral); transform: translateY(-3px); }
+
+    /* ── FOOTER ─────────────────────────────────────────────────── */
+    footer {
+      background: var(--text);
+      color: rgba(255,255,255,0.5);
+      padding: 2rem 6%;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+    }
+
+    footer .f-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem; font-weight: 900;
+      color: white;
+    }
+
+    footer .f-logo span { color: var(--coral); }
+
+    footer p { font-size: 0.8rem; }
+
+    /* ── MODAL ──────────────────────────────────────────────────── */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,0.45);
+      align-items: center; justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 2.5rem;
+      width: 100%; max-width: 500px;
+      max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.2);
+      position: relative;
+    }
+
+    .modal h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem; font-weight: 700;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal .close-btn {
+      position: absolute; top: 1.2rem; right: 1.5rem;
+      background: none; border: none;
+      font-size: 1.4rem; cursor: pointer;
+      color: var(--muted); transition: color 0.2s;
+    }
+
+    .modal .close-btn:hover { color: var(--coral); }
+
+    .modal-form { display: flex; flex-direction: column; gap: 1rem; }
+
+    .modal-form input,
+    .modal-form select,
+    .modal-form textarea {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.92rem;
+      color: var(--text);
+      background: var(--bg);
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .modal-form input:focus,
+    .modal-form select:focus,
+    .modal-form textarea:focus { border-color: var(--coral); }
+
+    .modal-form textarea { resize: vertical; min-height: 100px; }
+
+    .modal-form label {
+      font-size: 0.78rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--muted); display: block; margin-bottom: 0.3rem;
+    }
+
+    .modal-actions { display: flex; gap: 0.75rem; margin-top: 0.5rem; }
+
+    .btn-modal-save {
+      flex: 1; padding: 0.85rem; border: none;
+      border-radius: 10px; font-family: 'Inter', sans-serif;
+      font-size: 0.92rem; font-weight: 700;
+      cursor: pointer; transition: all 0.25s;
+    }
+
+    .btn-modal-cancel {
+      padding: 0.85rem 1.5rem;
+      background: none;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.92rem; font-weight: 600;
+      color: var(--muted); cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .btn-modal-cancel:hover { border-color: var(--coral); color: var(--coral); }
+
+    /* ── EMPTY STATE ────────────────────────────────────────────── */
+    .empty-state {
+      text-align: center; padding: 3rem;
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      color: var(--muted);
+    }
+
+    .empty-state .empty-icon { font-size: 3rem; margin-bottom: 0.75rem; }
+    .empty-state p { font-size: 0.95rem; }
+
+    /* ── RESPONSIVE ─────────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .contact-card { padding: 2rem 1.5rem; }
+      footer { flex-direction: column; text-align: center; }
+      .link-insert-row { flex-direction: column; }
+      .link-insert-row input { min-width: unset; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAVBAR ──────────────────────────────────────────────────── -->
+<nav>
+  <a href="#hero" class="nav-logo">Doudoush<span class="dot">.</span></a>
+  <a href="#contact" class="nav-contact">Contact</a>
+</nav>
+
+<!-- ── HERO ────────────────────────────────────────────────────── -->
+<section id="hero">
+  <p class="hero-eyebrow">Création du contenu</p>
+  <h1 class="hero-title">
+    L'art de<br><em>raconter des histoires</em>
+  </h1>
+  <p class="hero-subtitle">
+    Montage vidéo, photographie et articles culturels — trois disciplines, une seule vision.
+  </p>
+
+  <div class="hero-welcome">
+    <p>
+      <strong>Entrez… oui oui, sans frapper. 🚪</strong><br><br>
+      Ici c'est un espace où les idées circulent librement, où la créativité rencontre la bonne humeur,
+      et où chaque projet est traité comme s'il faisait partie de la famille.
+      Pas de discours compliqué, juste de <strong>l'authenticité</strong>, du <strong>fun</strong>
+      et beaucoup de <strong>passion</strong>. 🎨✨
+    </p>
+  </div>
+
+  <div class="hero-pills">
+    <a href="#montage"  class="pill pill-coral">🎬 Montage Vidéo</a>
+    <a href="#photo"    class="pill pill-yellow">📷 Photographie</a>
+    <a href="#articles" class="pill pill-teal">✍️ Articles Culturels</a>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Explorer</span>
+    <div class="scroll-arrow">↓</div>
+  </div>
+</section>
+
+<!-- ── MONTAGE VIDÉO ────────────────────────────────────────────── -->
+<div class="section-wrap" id="montage">
+  <div class="section-header">
+    <div class="section-header-left">
+      <span class="badge badge-coral">🎬 Montage Vidéo</span>
+      <h2 class="section-title-main">Mes projets vidéo</h2>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
-    <script>anchors.add();</script>
-  </body>
+    <button class="btn-add btn-add-coral" onclick="openModal('video')">
+      + Ajouter un projet
+    </button>
+  </div>
+  <div class="video-grid" id="video-grid">
+    <!-- Rendered by JS -->
+  </div>
+</div>
+
+<!-- ── PHOTOGRAPHIE ─────────────────────────────────────────────── -->
+<div class="section-wrap" id="photo">
+  <div class="section-header">
+    <div class="section-header-left">
+      <span class="badge badge-yellow">📷 Photographie</span>
+      <h2 class="section-title-main">Mes photos</h2>
+    </div>
+    <button class="btn-add btn-add-yellow" onclick="openModal('photo')">
+      + Ajouter une photo
+    </button>
+  </div>
+  <div class="photo-grid" id="photo-grid">
+    <!-- Rendered by JS -->
+  </div>
+</div>
+
+<!-- ── ARTICLES CULTURELS ───────────────────────────────────────── -->
+<div class="section-wrap" id="articles">
+  <div class="section-header">
+    <div class="section-header-left">
+      <span class="badge badge-teal">✍️ Articles Culturels</span>
+      <h2 class="section-title-main">Mes articles</h2>
+    </div>
+    <button class="btn-add btn-add-teal" onclick="openModal('article')">
+      + Écrire un article
+    </button>
+  </div>
+
+  <!-- Link insert area -->
+  <div class="link-insert-area">
+    <h4>🔗 Ajouter un lien d'article externe</h4>
+    <div class="link-insert-row">
+      <input type="url" id="article-link-input" placeholder="https://monsite.com/mon-article..." />
+      <input type="text" id="article-link-label" placeholder="Titre du lien (optionnel)" style="max-width:220px;" />
+      <button class="btn-add-link" onclick="addArticleLink()">Ajouter</button>
+    </div>
+    <div class="saved-links" id="saved-links"></div>
+  </div>
+
+  <div class="articles-grid" id="articles-grid">
+    <!-- Rendered by JS -->
+  </div>
+</div>
+
+<!-- ── CONTACT ──────────────────────────────────────────────────── -->
+<section id="contact">
+  <p class="contact-eyebrow">📬 Contact</p>
+  <h2>Travaillons ensemble</h2>
+  <p>Un projet, une idée, une collaboration ? Je suis là.</p>
+
+  <div class="contact-card">
+    <form class="contact-form" onsubmit="envoyerMessage(event);">
+      <div>
+        <label class="form-label">Nom</label>
+        <input id="contact-nom" type="text" class="form-input" placeholder="Ton nom" required />
+      </div>
+      <div>
+        <label class="form-label">Email</label>
+        <input id="contact-email" type="email" class="form-input" placeholder="ton@email.com" required />
+      </div>
+      <div>
+        <label class="form-label">Message</label>
+        <textarea id="contact-message" class="form-textarea" placeholder="Décris ton projet ou ta question..." required></textarea>
+      </div>
+      <button type="submit" class="btn-submit" id="btn-envoyer">Envoyer le message ✉️</button>
+    </form>
+    <div id="contact-confirm" style="display:none; text-align:center; padding:1.5rem 0;">
+      <div style="font-size:2.5rem; margin-bottom:0.75rem;">✅</div>
+      <p style="font-weight:700; font-size:1.05rem; color:var(--text);">Message envoyé !</p>
+      <p style="color:var(--muted); font-size:0.9rem; margin-top:0.4rem;">Merci, je te réponds dès que possible.</p>
+      <button onclick="resetForm()" style="margin-top:1.2rem; background:none; border:1.5px solid var(--border); border-radius:8px; padding:0.5rem 1.2rem; cursor:pointer; font-family:'Inter',sans-serif; color:var(--muted); font-size:0.85rem; transition:all 0.2s;" onmouseover="this.style.borderColor='var(--coral)';this.style.color='var(--coral)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">Envoyer un autre message</button>
+    </div>
+
+    <div class="social-row">
+      <a href="#" class="social-icon" title="Instagram">📸</a>
+      <a href="#" class="social-icon" title="YouTube">🎬</a>
+      <a href="#" class="social-icon" title="LinkedIn">💼</a>
+      <a href="#" class="social-icon" title="Email">✉️</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── BOUTON PUBLIER (flottant) ─────────────────────────────────── -->
+<button id="btn-publier" onclick="publierSite()" style="
+  position: fixed; bottom: 1.8rem; right: 1.8rem; z-index: 999;
+  background: linear-gradient(135deg, #FF6B6B, #FFD166);
+  color: #1C1C1C; font-family: 'Inter', sans-serif;
+  font-size: 0.88rem; font-weight: 700;
+  border: none; border-radius: 50px;
+  padding: 0.75rem 1.5rem;
+  box-shadow: 0 6px 24px rgba(255,107,107,0.4);
+  cursor: pointer; letter-spacing: 0.02em;
+  transition: transform 0.2s, box-shadow 0.2s;
+" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 30px rgba(255,107,107,0.5)'"
+   onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 6px 24px rgba(255,107,107,0.4)'">
+  🚀 Publier le site
+</button>
+
+<!-- ── MODAL PUBLICATION ──────────────────────────────────────── -->
+<div id="modal-save" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; padding:1rem;">
+  <div id="modal-save-inner" style="background:white; border-radius:20px; padding:2.5rem; max-width:440px; width:100%; text-align:center; box-shadow:0 24px 60px rgba(0,0,0,0.2);">
+    <div id="modal-save-icon" style="font-size:3rem; margin-bottom:1rem;">⏳</div>
+    <h3 id="modal-save-title" style="font-family:'Playfair Display',serif; font-size:1.4rem; margin-bottom:0.75rem;">Publication en cours...</h3>
+    <p id="modal-save-msg" style="color:#7A7A7A; font-size:0.9rem; margin-bottom:1.5rem;">Ton site est en train d'être mis à jour.</p>
+    <div id="modal-save-actions"></div>
+  </div>
+</div>
+
+<!-- ── FOOTER ───────────────────────────────────────────────────── -->
+<footer>
+  <div class="f-logo">Doudoush<span>.</span></div>
+  <p>Montage · Photographie · Articles culturels</p>
+  <p>© 2026 — Tous droits réservés</p>
+</footer>
+
+<!-- ── MODAL ────────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" id="modal-box">
+    <button class="close-btn" onclick="closeModal()">×</button>
+    <h3 id="modal-title">Ajouter un projet</h3>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- ── JAVASCRIPT ────────────────────────────────────────────────── -->
+<script>
+  /* ─── Contenu publié (mis à jour à chaque export) ─────────── */
+  const PRELOADED_DATA = {"video":[],"photo":[],"article":[],"links":[]};
+
+  /* ─── GitHub Pages auto-deploy ─────────────────────────────── */
+  const GITHUB_TOKEN = localStorage.getItem('gh_deploy_token') || '';
+  const GITHUB_REPO  = 'doudoushco/doudoushco.github.io';
+
+  /* ─── Storage helpers ─────────────────────────────────────── */
+  const KEYS = { video: 'doudoush_videos', photo: 'doudoush_photos', article: 'doudoush_articles', links: 'doudoush_links' };
+
+  function load(key) {
+    try {
+      const raw = localStorage.getItem(KEYS[key]);
+      // Si localStorage a une valeur (même tableau vide), on l'utilise
+      if (raw !== null) return JSON.parse(raw) || [];
+      // Sinon on utilise le contenu publié (mode visiteur)
+      return PRELOADED_DATA[key] || [];
+    } catch { return PRELOADED_DATA[key] || []; }
+  }
+
+  function save(key, data) {
+    localStorage.setItem(KEYS[key], JSON.stringify(data));
+  }
+
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+  /* ─── IndexedDB pour stocker les vidéos lourdes ─────────────── */
+  const VideoDB = (() => {
+    const DB_NAME = 'doudoush_db', STORE = 'videos';
+    let db;
+    function open() {
+      return new Promise((res, rej) => {
+        if (db) return res(db);
+        const r = indexedDB.open(DB_NAME, 1);
+        r.onupgradeneeded = e => e.target.result.createObjectStore(STORE);
+        r.onsuccess = e => { db = e.target.result; res(db); };
+        r.onerror = e => rej(e.target.error);
+      });
+    }
+    async function set(key, blob) {
+      const d = await open();
+      return new Promise((res, rej) => {
+        const tx = d.transaction(STORE, 'readwrite');
+        tx.objectStore(STORE).put(blob, key);
+        tx.oncomplete = res; tx.onerror = e => rej(e.target.error);
+      });
+    }
+    async function get(key) {
+      const d = await open();
+      return new Promise((res, rej) => {
+        const r = d.transaction(STORE, 'readonly').objectStore(STORE).get(key);
+        r.onsuccess = e => res(e.target.result);
+        r.onerror = e => rej(e.target.error);
+      });
+    }
+    async function del(key) {
+      const d = await open();
+      return new Promise((res, rej) => {
+        const tx = d.transaction(STORE, 'readwrite');
+        tx.objectStore(STORE).delete(key);
+        tx.oncomplete = res; tx.onerror = e => rej(e.target.error);
+      });
+    }
+    return { set, get, del };
+  })();
+
+  /* ─── Embed YouTube / Vimeo ───────────────────────────────── */
+  function getEmbed(link) {
+    if (!link) return null;
+    const yt = link.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    if (yt) return `<iframe style="width:100%;height:100%;border:none;border-radius:var(--radius) var(--radius) 0 0;" src="https://www.youtube.com/embed/${yt[1]}" allowfullscreen></iframe>`;
+    const vm = link.match(/vimeo\.com\/(\d+)/);
+    if (vm) return `<iframe style="width:100%;height:100%;border:none;border-radius:var(--radius) var(--radius) 0 0;" src="https://player.vimeo.com/video/${vm[1]}" allowfullscreen></iframe>`;
+    return null;
+  }
+
+  /* ─── Render Videos ───────────────────────────────────────── */
+  async function renderVideos() {
+    const grid = document.getElementById('video-grid');
+    const items = load('video');
+    if (!items.length) {
+      grid.innerHTML = `<div class="empty-state"><div class="empty-icon">🎬</div><p>Aucun projet vidéo pour l'instant.<br>Clique sur <strong>+ Ajouter</strong> pour commencer.</p></div>`;
+      return;
+    }
+    // Charger les blobs depuis IndexedDB pour les vidéos locales
+    for (const v of items) {
+      if (v.videoId) {
+        try {
+          const blob = await VideoDB.get(v.videoId);
+          if (blob) v._blobUrl = URL.createObjectURL(blob);
+        } catch(_) {}
+      }
+    }
+    grid.innerHTML = items.map(v => {
+      const embed = getEmbed(v.link);
+      const videoSrc = v._blobUrl || v.videoUrl || v.videoData || null;
+      let thumbHtml = '';
+      if (videoSrc) {
+        thumbHtml = `<video style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius) var(--radius) 0 0;" src="${videoSrc}" controls preload="metadata"></video>`;
+      } else if (embed) {
+        thumbHtml = embed;
+      } else {
+        thumbHtml = `
+          ${v.category ? `<span class="video-cat-tag">${esc(v.category)}</span>` : ''}
+          ${v.link ? `<a href="${esc(v.link)}" target="_blank" rel="noopener"><div class="play-btn">▶</div></a>` : `<div class="play-btn">▶</div>`}
+          ${v.duration ? `<span class="video-duration">${esc(v.duration)}</span>` : ''}
+        `;
+      }
+      return `
+        <div class="video-card">
+          <div class="video-thumb">${thumbHtml}</div>
+          <div class="video-body">
+            ${v.category && !videoSrc && !embed ? '' : v.category ? `<span style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--coral);background:rgba(255,107,107,0.1);padding:0.2rem 0.6rem;border-radius:50px;margin-bottom:0.5rem;display:inline-block;">${esc(v.category)}</span>` : ''}
+            <h3>${esc(v.title)}</h3>
+            ${v.desc ? `<p>${esc(v.desc)}</p>` : ''}
+            ${v.link && !embed ? `<a href="${esc(v.link)}" target="_blank" rel="noopener" class="video-link">Voir le projet →</a>` : ''}
+            ${v.duration && !videoSrc ? `<span style="font-size:0.78rem;color:var(--muted);">⏱ ${esc(v.duration)}</span>` : ''}
+            <div class="card-actions">
+              <button class="btn-delete" onclick="deleteItem('video','${v.id}')">🗑 Supprimer</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  /* ─── Render Photos ───────────────────────────────────────── */
+  function renderPhotos() {
+    const grid = document.getElementById('photo-grid');
+    const items = load('photo');
+    if (!items.length) {
+      grid.innerHTML = `<div class="empty-state"><div class="empty-icon">📷</div><p>Aucune photo pour l'instant.<br>Clique sur <strong>+ Ajouter</strong> pour commencer.</p></div>`;
+      return;
+    }
+    grid.innerHTML = items.map(p => `
+      <div class="photo-card">
+        <div class="photo-frame">
+          ${p.imgData
+            ? `<img src="${p.imgData}" alt="${esc(p.title)}" loading="lazy"/>`
+            : p.imgUrl
+              ? `<img src="${esc(p.imgUrl)}" alt="${esc(p.title)}" loading="lazy"/>`
+              : `<span class="photo-emoji">${p.emoji || '🖼️'}</span>`}
+        </div>
+        <div class="photo-info">
+          <h3>${esc(p.title)}</h3>
+          ${p.desc ? `<p>${esc(p.desc)}</p>` : ''}
+          <div class="card-actions">
+            <button class="btn-delete" onclick="deleteItem('photo','${p.id}')">🗑 Supprimer</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  /* ─── Render Articles ─────────────────────────────────────── */
+  function renderArticles() {
+    const grid = document.getElementById('articles-grid');
+    const items = load('article');
+    if (!items.length) {
+      grid.innerHTML = `<div class="empty-state"><div class="empty-icon">✍️</div><p>Aucun article pour l'instant.<br>Clique sur <strong>+ Écrire</strong> pour commencer.</p></div>`;
+      return;
+    }
+    grid.innerHTML = items.map(a => `
+      <div class="article-card">
+        <div class="article-card-top-line"></div>
+        ${a.category ? `<span class="article-category-badge">${esc(a.category)}</span>` : ''}
+        <h3>${esc(a.title)}</h3>
+        ${a.text ? `<p class="article-text">${esc(a.text).substring(0,200)}${a.text.length > 200 ? '...' : ''}</p>` : ''}
+        <div class="article-meta">
+          ${a.date ? `<span>${esc(a.date)}</span>` : ''}
+          ${a.readTime ? `<span class="meta-dot"></span><span>${esc(a.readTime)} min de lecture</span>` : ''}
+        </div>
+        ${a.link ? `<a href="${esc(a.link)}" target="_blank" rel="noopener" class="read-more">Lire l'article →</a>` : ''}
+        <div class="card-actions">
+          <button class="btn-delete" onclick="deleteItem('article','${a.id}')">🗑 Supprimer</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  /* ─── Render Article Links ────────────────────────────────── */
+  function renderLinks() {
+    const container = document.getElementById('saved-links');
+    const links = load('links');
+    container.innerHTML = links.map(l => `
+      <span class="saved-link-chip">
+        🔗 <a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label || l.url)}</a>
+        <button class="chip-del" onclick="deleteLink('${l.id}')">×</button>
+      </span>
+    `).join('');
+  }
+
+  function addArticleLink() {
+    const urlInput   = document.getElementById('article-link-input');
+    const labelInput = document.getElementById('article-link-label');
+    const url = urlInput.value.trim();
+    if (!url) { urlInput.focus(); return; }
+    const links = load('links');
+    links.push({ id: uid(), url, label: labelInput.value.trim() });
+    save('links', links);
+    urlInput.value = '';
+    labelInput.value = '';
+    renderLinks();
+  }
+
+  function deleteLink(id) {
+    const links = load('links').filter(l => l.id !== id);
+    save('links', links);
+    renderLinks();
+  }
+
+  /* ─── Delete item ─────────────────────────────────────────── */
+  function deleteItem(type, id) {
+    if (!confirm('Supprimer ce contenu ?')) return;
+    if (type === 'video') {
+      const item = load('video').find(x => x.id === id);
+      if (item && item.videoId) VideoDB.del(item.videoId).catch(() => {});
+    }
+    const data = load(type).filter(x => x.id !== id);
+    save(type, data);
+    if (type === 'video')   renderVideos();
+    if (type === 'photo')   renderPhotos();
+    if (type === 'article') renderArticles();
+  }
+
+  /* ─── Modal ───────────────────────────────────────────────── */
+  let currentModalType = null;
+
+  const MODAL_CONFIGS = {
+    video: {
+      title: '🎬 Ajouter un projet vidéo',
+      color: '#FF6B6B',
+      fields: `
+        <div><label>Titre *</label><input id="f-title" type="text" placeholder="Nom de ta vidéo" /></div>
+        <div><label>Catégorie</label><input id="f-category" type="text" placeholder="ex: Court-métrage, Clip, Reportage..." /></div>
+        <div><label>Description</label><textarea id="f-desc" placeholder="Quelques mots sur ce projet..."></textarea></div>
+        <div>
+          <label>📁 Uploader depuis ton ordinateur</label>
+          <div style="margin-top:0.4rem;">
+            <label for="f-video-file" style="display:inline-flex;align-items:center;gap:0.5rem;background:var(--coral);color:white;padding:0.6rem 1.2rem;border-radius:8px;cursor:pointer;font-weight:600;font-size:0.88rem;">
+              🎬 Choisir une vidéo
+            </label>
+            <input id="f-video-file" type="file" accept="video/*" style="display:none;" onchange="previewVideo(this)" />
+            <span id="f-video-name" style="font-size:0.8rem;color:var(--muted);margin-left:0.75rem;"></span>
+          </div>
+          <div id="f-video-preview" style="margin-top:0.8rem;display:none;">
+            <video id="f-video-el" style="width:100%;max-height:180px;border-radius:8px;border:2px solid var(--coral);" controls></video>
+          </div>
+        </div>
+        <div style="text-align:center;color:var(--muted);font-size:0.8rem;padding:0.25rem 0;">— ou colle un lien YouTube / Vimeo —</div>
+        <div><label>🔗 Lien YouTube / Vimeo</label><input id="f-link" type="url" placeholder="https://youtube.com/watch?v=..." /></div>
+        <div><label>Durée</label><input id="f-duration" type="text" placeholder="ex: 3:45" /></div>
+      `,
+      save: () => ({
+        title:    document.getElementById('f-title').value.trim(),
+        category: document.getElementById('f-category').value.trim(),
+        desc:     document.getElementById('f-desc').value.trim(),
+        link:     document.getElementById('f-link').value.trim(),
+        duration: document.getElementById('f-duration').value.trim()
+      })
+    },
+    photo: {
+      title: '📷 Ajouter une photo',
+      color: '#FFD166',
+      fields: `
+        <div><label>Titre *</label><input id="f-title" type="text" placeholder="Titre ou lieu de la photo" /></div>
+        <div><label>Description</label><input id="f-desc" type="text" placeholder="Contexte, technique..." /></div>
+        <div>
+          <label>📁 Choisir depuis ton ordinateur</label>
+          <div style="margin-top:0.4rem;">
+            <label for="f-file" style="display:inline-flex;align-items:center;gap:0.5rem;background:var(--yellow);color:#1C1C1C;padding:0.6rem 1.2rem;border-radius:8px;cursor:pointer;font-weight:600;font-size:0.88rem;">
+              📷 Choisir une photo
+            </label>
+            <input id="f-file" type="file" accept="image/*" style="display:none;" onchange="previewPhoto(this)" />
+          </div>
+          <div id="f-preview" style="margin-top:0.8rem;display:none;">
+            <img id="f-preview-img" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:2px solid var(--yellow);" />
+          </div>
+        </div>
+        <div style="text-align:center;color:var(--muted);font-size:0.8rem;">— ou —</div>
+        <div><label>🔗 Lien image (URL)</label><input id="f-imgUrl" type="url" placeholder="https://..." /></div>
+      `,
+      save: () => ({
+        title:  document.getElementById('f-title').value.trim(),
+        desc:   document.getElementById('f-desc').value.trim(),
+        imgUrl: document.getElementById('f-imgUrl').value.trim(),
+        emoji:  '🖼️'
+      })
+    },
+    article: {
+      title: '✍️ Écrire un article',
+      color: '#06C49A',
+      fields: `
+        <div><label>Titre *</label><input id="f-title" type="text" placeholder="Titre de l'article" /></div>
+        <div><label>Catégorie</label><input id="f-category" type="text" placeholder="ex: Cinéma, Musique, Société..." /></div>
+        <div><label>Texte / Extrait</label><textarea id="f-text" placeholder="Écris ton article ou un extrait ici..." style="min-height:140px;"></textarea></div>
+        <div><label>Lien (si article externe)</label><input id="f-link" type="url" placeholder="https://..." /></div>
+        <div><label>Date</label><input id="f-date" type="text" placeholder="ex: Mars 2026" /></div>
+        <div><label>Temps de lecture (min)</label><input id="f-readTime" type="number" placeholder="ex: 5" min="1" /></div>
+      `,
+      save: () => ({
+        title:    document.getElementById('f-title').value.trim(),
+        category: document.getElementById('f-category').value.trim(),
+        text:     document.getElementById('f-text').value.trim(),
+        link:     document.getElementById('f-link').value.trim(),
+        date:     document.getElementById('f-date').value.trim(),
+        readTime: document.getElementById('f-readTime').value.trim()
+      })
+    }
+  };
+
+  function openModal(type) {
+    currentModalType = type;
+    const cfg = MODAL_CONFIGS[type];
+    document.getElementById('modal-title').textContent = cfg.title;
+    document.getElementById('modal-body').innerHTML = `
+      <form class="modal-form" onsubmit="return false;">
+        ${cfg.fields}
+        <div class="modal-actions">
+          <button class="btn-modal-save" style="background:${cfg.color};color:white;" onclick="submitModal()">Enregistrer</button>
+          <button class="btn-modal-cancel" onclick="closeModal()">Annuler</button>
+        </div>
+      </form>
+    `;
+    document.getElementById('modal-overlay').classList.add('active');
+    setTimeout(() => document.getElementById('f-title') && document.getElementById('f-title').focus(), 100);
+  }
+
+  function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('active');
+    currentModalType = null;
+  }
+
+  /* ─── Resize image before storing ────────────────────────── */
+  function resizeImage(file, maxW, maxH, quality) {
+    return new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+          let w = img.width, h = img.height;
+          if (w > maxW) { h = h * maxW / w; w = maxW; }
+          if (h > maxH) { w = w * maxH / h; h = maxH; }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', quality || 0.82));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function previewVideo(input) {
+    const file = input.files[0];
+    if (!file) return;
+    document.getElementById('f-video-name').textContent = file.name + ' (' + (file.size / 1024 / 1024).toFixed(1) + ' MB)';
+    const url = URL.createObjectURL(file);
+    const vid = document.getElementById('f-video-el');
+    vid.src = url;
+    document.getElementById('f-video-preview').style.display = 'block';
+    // Vider le champ lien si fichier choisi
+    const linkField = document.getElementById('f-link');
+    if (linkField) linkField.value = '';
+  }
+
+  function previewPhoto(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById('f-preview-img').src = e.target.result;
+      document.getElementById('f-preview').style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function submitModal() {
+    const cfg = MODAL_CONFIGS[currentModalType];
+    const data = cfg.save();
+    if (!data.title) {
+      const el = document.getElementById('f-title');
+      el.style.borderColor = 'var(--coral)';
+      el.focus();
+      el.placeholder = 'Le titre est obligatoire !';
+      return;
+    }
+
+    // Si c'est une vidéo avec fichier local
+    if (currentModalType === 'video') {
+      const fileInput = document.getElementById('f-video-file');
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        const file = fileInput.files[0];
+        const btn = document.querySelector('.btn-modal-save');
+        btn.textContent = 'Chargement...';
+        btn.disabled = true;
+        const videoId = uid();
+        data.videoId   = videoId;
+        data.videoName = file.name;
+        data.link      = '';
+        data.id        = videoId;
+        VideoDB.set(videoId, file).then(() => {
+          const items = load('video');
+          items.unshift(data);
+          save('video', items);
+          closeModal();
+          renderVideos();
+        }).catch(err => {
+          btn.textContent = '❌ Erreur';
+          btn.disabled = false;
+          alert('Erreur stockage vidéo : ' + err.message);
+        });
+        return;
+      }
+    }
+
+    // Si c'est une photo avec fichier local
+    if (currentModalType === 'photo') {
+      const fileInput = document.getElementById('f-file');
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        const btn = document.querySelector('.btn-modal-save');
+        btn.textContent = 'Traitement...';
+        btn.disabled = true;
+        resizeImage(fileInput.files[0], 900, 700, 0.82).then(base64 => {
+          data.imgData = base64;
+          data.imgUrl  = '';
+          data.id = uid();
+          const items = load('photo');
+          items.unshift(data);
+          save('photo', items);
+          closeModal();
+          renderPhotos();
+        });
+        return;
+      }
+    }
+
+    data.id = uid();
+    const items = load(currentModalType);
+    items.unshift(data);
+    save(currentModalType, items);
+    closeModal();
+    if (currentModalType === 'video')   renderVideos();
+    if (currentModalType === 'photo')   renderPhotos();
+    if (currentModalType === 'article') renderArticles();
+  }
+
+  /* Close modal on overlay click */
+  document.getElementById('modal-overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('modal-overlay')) closeModal();
+  });
+
+  /* Escape key */
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  /* ─── Escape helper ───────────────────────────────────────── */
+  function esc(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  /* ─── Contact form (Formspree) ────────────────────────────── */
+  function envoyerMessage(e) {
+    e.preventDefault();
+    const nom     = document.getElementById('contact-nom').value.trim();
+    const email   = document.getElementById('contact-email').value.trim();
+    const message = document.getElementById('contact-message').value.trim();
+    if (!nom || !email || !message) return;
+
+    const btn = document.getElementById('btn-envoyer');
+    btn.textContent = 'Envoi en cours...';
+    btn.disabled = true;
+
+    fetch('https://formspree.io/f/xjgpbrgo', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ name: nom, email: email, message: message })
+    })
+    .then(res => {
+      if (res.ok) {
+        document.querySelector('.contact-form').style.display = 'none';
+        document.getElementById('contact-confirm').style.display = 'block';
+      } else {
+        btn.textContent = 'Erreur, réessaie ✉️';
+        btn.disabled = false;
+      }
+    })
+    .catch(() => {
+      btn.textContent = 'Erreur, réessaie ✉️';
+      btn.disabled = false;
+    });
+  }
+
+  function resetForm() {
+    document.getElementById('contact-nom').value = '';
+    document.getElementById('contact-email').value = '';
+    document.getElementById('contact-message').value = '';
+    document.getElementById('btn-envoyer').textContent = 'Envoyer le message ✉️';
+    document.getElementById('btn-envoyer').disabled = false;
+    document.querySelector('.contact-form').style.display = 'flex';
+    document.getElementById('contact-confirm').style.display = 'none';
+  }
+
+  /* ─── Export & Publier (auto-deploy Netlify sans zip) ────── */
+  async function publierSite() {
+    const btn = document.getElementById('btn-publier');
+    btn.textContent = '⏳ Publication...';
+    btn.disabled = true;
+
+    const modal    = document.getElementById('modal-save');
+    const icon     = document.getElementById('modal-save-icon');
+    const title    = document.getElementById('modal-save-title');
+    const msg      = document.getElementById('modal-save-msg');
+    const actions  = document.getElementById('modal-save-actions');
+    const closeBtn = '<button onclick="document.getElementById(\'modal-save\').style.display=\'none\'" style="margin-top:1rem;background:none;border:1.5px solid #e0e0e0;border-radius:8px;padding:0.5rem 1.5rem;cursor:pointer;font-family:Inter,sans-serif;color:#7A7A7A;font-size:0.85rem;">Fermer</button>';
+
+    icon.textContent    = '⏳';
+    title.textContent   = 'Publication en cours...';
+    msg.textContent     = 'Mise à jour de doudoushco.github.io';
+    actions.innerHTML   = '';
+    modal.style.display = 'flex';
+
+    /* helper : blob → base64 */
+    function blobToBase64(blob) {
+      return new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onload = e => res(e.target.result.split(',')[1]);
+        r.onerror = rej;
+        r.readAsDataURL(blob);
+      });
+    }
+
+    /* helper : texte → base64 */
+    function strToBase64(str) {
+      return btoa(unescape(encodeURIComponent(str)));
+    }
+
+    /* helper : GET le sha GitHub d'un fichier existant */
+    async function getFileSha(token, repo, path) {
+      const r = await fetch('https://api.github.com/repos/' + repo + '/contents/' + path, {
+        headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' }
+      });
+      if (!r.ok) return null;
+      const d = await r.json();
+      return d.sha || null;
+    }
+
+    /* helper : uploader un fichier sur GitHub */
+    async function ghPut(token, repo, path, b64, sha, commitMsg) {
+      const body = { message: commitMsg, content: b64 };
+      if (sha) body.sha = sha;
+      const r = await fetch('https://api.github.com/repos/' + repo + '/contents/' + path, {
+        method: 'PUT',
+        headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.message || 'Erreur upload ' + path);
+      return d;
+    }
+
+    try {
+      let token = localStorage.getItem('gh_deploy_token') || '';
+      const repo  = GITHUB_REPO;
+      if (!token) {
+        token = prompt('Entre ton token GitHub (ghp_...) pour publier :');
+        if (token) localStorage.setItem('gh_deploy_token', token);
+      }
+      if (!token) throw new Error('Token manquant.');
+
+      // 1. Collecter le contenu
+      const data = {
+        video:   load('video'),
+        photo:   load('photo'),
+        article: load('article'),
+        links:   load('links')
+      };
+
+      // 2. Préparer les vidéos locales depuis IndexedDB
+      const videoUploads = [];
+      for (const v of data.video) {
+        if (v.videoId) {
+          try {
+            msg.textContent = 'Préparation des vidéos...';
+            const blob = await VideoDB.get(v.videoId);
+            if (blob) {
+              const ext = (v.videoName || 'video.mp4').split('.').pop() || 'mp4';
+              const ghPath = 'videos/' + v.videoId + '.' + ext;
+              const b64 = await blobToBase64(blob);
+              videoUploads.push({ path: ghPath, b64 });
+              v.videoUrl = 'https://doudoushco.github.io/' + ghPath;
+              delete v.videoId; delete v.videoName;
+            }
+          } catch(_) {}
+        }
+        delete v._blobUrl;
+      }
+
+      // 3. Construire le HTML à publier
+      msg.textContent = 'Mise à jour de doudoushco.github.io';
+      let baseHtml;
+      try {
+        const r = await fetch('https://doudoushco.github.io?_t=' + Date.now());
+        baseHtml = await r.text();
+      } catch(_) {
+        baseHtml = document.documentElement.outerHTML;
+      }
+
+      let newHtml = baseHtml.replace(
+        /const PRELOADED_DATA = \{.*?\};/s,
+        'const PRELOADED_DATA = ' + JSON.stringify(data) + ';'
+      );
+      newHtml = newHtml
+        .replace(/⏳ Publication\.\.\./g, '🚀 Publier le site')
+        .replace(/⏳ Préparation\.\.\./g, '🚀 Publier le site')
+        .replace(/✅ Publié !/g,          '🚀 Publier le site')
+        .replace(/✅ Prêt !/g,            '🚀 Publier le site');
+      newHtml = newHtml.replace(
+        /id="modal-save" style="display:[^"]*"/g,
+        'id="modal-save" style="display:none"'
+      );
+      newHtml = newHtml.replace(
+        /const GITHUB_TOKEN\s*=\s*'[^']*';/,
+        "const GITHUB_TOKEN = '';"
+      );
+
+      // 4. Uploader le HTML
+      msg.textContent = 'Upload du fichier HTML...';
+      const htmlSha = await getFileSha(token, repo, 'index.html');
+      await ghPut(token, repo, 'index.html', strToBase64(newHtml), htmlSha, 'Mise à jour portfolio');
+
+      // 5. Uploader les vidéos
+      for (let i = 0; i < videoUploads.length; i++) {
+        const vu = videoUploads[i];
+        msg.textContent = 'Upload vidéo ' + (i + 1) + '/' + videoUploads.length + '...';
+        const vSha = await getFileSha(token, repo, vu.path);
+        await ghPut(token, repo, vu.path, vu.b64, vSha, 'Ajout vidéo');
+      }
+
+      icon.textContent  = '🎉';
+      title.textContent = 'Site publié !';
+      msg.innerHTML     = 'Ton site est en ligne sur<br><a href="https://doudoushco.github.io" target="_blank" style="color:#FF6B6B;font-weight:700;">doudoushco.github.io</a>';
+      actions.innerHTML = closeBtn;
+      btn.textContent   = '✅ Publié !';
+
+    } catch(e) {
+      icon.textContent  = '❌';
+      title.textContent = 'Erreur de publication';
+      msg.textContent   = e.message;
+      actions.innerHTML = closeBtn;
+      btn.textContent   = '❌ Erreur';
+    }
+
+    setTimeout(() => {
+      btn.textContent = '🚀 Publier le site';
+      btn.disabled    = false;
+    }, 3000);
+  }
+
+  /* ─── Init ────────────────────────────────────────────────── */
+  renderVideos();
+  renderPhotos();
+  renderArticles();
+  renderLinks();
+</script>
+</body>
 </html>
