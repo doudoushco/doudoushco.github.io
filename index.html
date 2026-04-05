@@ -748,6 +748,9 @@
     #photo-lightbox.open{display:flex}
     #photo-lightbox img{max-width:94vw;max-height:92vh;object-fit:contain;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.7)}
     #photo-lightbox-close{position:fixed;top:1rem;right:1.5rem;font-size:2.5rem;color:#fff;cursor:pointer;background:none;border:none;z-index:2001;line-height:1}
+  
+    .btn-edit{background:none;border:1.5px solid #06C49A;color:#06C49A;border-radius:8px;padding:0.35rem 0.75rem;font-size:0.78rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;margin-right:0.4rem}
+    .btn-edit:hover{background:#06C49A;color:white}
   </style>
 </head>
 <body>
@@ -1619,6 +1622,91 @@ function closeLB(){
   document.body.style.overflow='';
 }
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLB();});
+</script>
+
+<script>
+var _editId=null;
+
+// Patch closeModal
+var _oCM=closeModal;
+closeModal=function(){_editId=null;_oCM();};
+
+// Patch renderPhotos/Videos/Articles pour ajouter bouton Modifier
+var _oRP=renderPhotos,_oRV=renderVideos,_oRA=renderArticles;
+function _addEditBtns(type,gridId){
+  var items=load(type);
+  var divs=document.getElementById(gridId)&&document.getElementById(gridId).querySelectorAll('.card-actions');
+  if(!divs)return;
+  items.forEach(function(item,i){
+    var a=divs[i];
+    if(!a||a.querySelector('.btn-edit'))return;
+    var b=document.createElement('button');
+    b.className='btn-edit';
+    b.textContent='✏️ Modifier';
+    b.onclick=function(e){e.stopPropagation();editItem(type,item.id);};
+    a.insertBefore(b,a.firstChild);
+  });
+}
+renderPhotos=function(){_oRP();_addEditBtns('photo','photos-grid');};
+renderVideos=function(){_oRV();_addEditBtns('video','videos-grid');};
+renderArticles=function(){_oRA();_addEditBtns('article','articles-grid');};
+
+function editItem(type,id){
+  var items=load(type);
+  var item=items.find(function(x){return x.id===id;});
+  if(!item)return;
+  _editId=id;
+  openModal(type);
+  setTimeout(function(){
+    var fields={title:'f-title',category:'f-category',desc:'f-desc',text:'f-text',link:'f-link',date:'f-date',readTime:'f-readTime',imgUrl:'f-imgUrl'};
+    Object.keys(fields).forEach(function(k){var el=document.getElementById(fields[k]);if(el)el.value=item[k]||'';});
+    var t=document.getElementById('modal-title');
+    if(t)t.textContent=t.textContent.replace('Ajouter','Modifier').replace('✍️ Écrire','✏️ Modifier');
+    var s=document.querySelector('.btn-modal-save');
+    if(s)s.textContent='Mettre à jour';
+    if(type==='photo'&&item.imgData){
+      var pr=document.getElementById('f-preview'),pi=document.getElementById('f-preview-img');
+      if(pr&&pi){pi.src=item.imgData;pr.style.display='block';}
+    }
+  },150);
+}
+
+var _oSM=submitModal;
+submitModal=function(){
+  if(!_editId){return _oSM();}
+  var eid=_editId,type=currentModalType,cfg=MODAL_CONFIGS[type],nd=cfg.save();
+  if(!nd.title){var el=document.getElementById('f-title');el.style.borderColor='var(--coral)';el.focus();return;}
+  if(type==='photo'){
+    var fi=document.getElementById('f-file');
+    if(fi&&fi.files&&fi.files[0]){
+      var btn=document.querySelector('.btn-modal-save');btn.textContent='Traitement...';btn.disabled=true;
+      resizeImage(fi.files[0],900,700,0.82).then(function(b64){nd.imgData=b64;nd.imgUrl='';_saveEdit(type,eid,nd);});
+      return;
+    }
+    var ex=load(type).find(function(x){return x.id===eid;});
+    if(ex&&ex.imgData&&!nd.imgUrl)nd.imgData=ex.imgData;
+  }
+  if(type==='video'){
+    var vfi=document.getElementById('f-video-file');
+    if(!vfi||!vfi.files||!vfi.files[0]){
+      var vex=load(type).find(function(x){return x.id===eid;});
+      if(vex){if(vex.videoId)nd.videoId=vex.videoId;if(vex.videoName)nd.videoName=vex.videoName;}
+    }
+  }
+  _saveEdit(type,eid,nd);
+};
+
+function _saveEdit(type,eid,nd){
+  var items=load(type),idx=items.findIndex(function(x){return x.id===eid;});
+  if(idx>=0){nd.id=eid;items[idx]=nd;save(type,items);}
+  closeModal();
+  if(type==='photo')renderPhotos();
+  else if(type==='video')renderVideos();
+  else renderArticles();
+}
+
+// Re-render pour afficher les boutons maintenant
+setTimeout(function(){renderPhotos();renderVideos();renderArticles();},200);
 </script>
 </body>
 </html>
