@@ -1648,7 +1648,7 @@ function _addEditBtns(type,gridId){
   });
 }
 renderPhotos=function(){_oRP();_addEditBtns('photo','photo-grid');};
-renderVideos=function(){_oRV();_addEditBtns('video','video-grid');};
+renderVideos=async function(){await _oRV();_addEditBtns('video','video-grid');};
 renderArticles=function(){_oRA();_addEditBtns('article','articles-grid');};
 
 function editItem(type,id){
