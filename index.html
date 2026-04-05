@@ -751,6 +751,31 @@
   
     .btn-edit{background:none;border:1.5px solid #06C49A;color:#06C49A;border-radius:8px;padding:0.35rem 0.75rem;font-size:0.78rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;margin-right:0.4rem}
     .btn-edit:hover{background:#06C49A;color:white}
+  
+    /* ── Mode Admin : éléments cachés pour les clients ── */
+    .btn-add, .btn-edit, .btn-delete, #btn-publier, .link-insert-area, .btn-add-link { display: none !important; }
+    body.admin-mode .btn-add   { display: inline-flex !important; }
+    body.admin-mode .btn-edit  { display: inline-flex !important; }
+    body.admin-mode .btn-delete{ display: inline-flex !important; }
+    body.admin-mode #btn-publier { display: flex !important; }
+    body.admin-mode .link-insert-area { display: block !important; }
+    body.admin-mode .btn-add-link { display: inline-flex !important; }
+    /* Cadenas */
+    #admin-lock{position:fixed;bottom:1.5rem;left:1.5rem;width:46px;height:46px;background:white;border:1.5px solid #ddd;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.25rem;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,0.1);z-index:900;transition:all 0.2s;user-select:none}
+    #admin-lock:hover{border-color:#06C49A;box-shadow:0 4px 16px rgba(6,196,154,0.3)}
+    /* Modal mot de passe */
+    #admin-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);display:none;align-items:center;justify-content:center;z-index:1500;padding:1rem}
+    #admin-modal-overlay.open{display:flex}
+    #admin-modal{background:white;border-radius:22px;padding:2.2rem 2rem;width:100%;max-width:340px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,0.2)}
+    #admin-modal .am-icon{font-size:2.8rem;margin-bottom:0.7rem}
+    #admin-modal .am-title{font-weight:800;font-size:1.2rem;margin-bottom:0.3rem;font-family:'Playfair Display',serif}
+    #admin-modal .am-sub{font-size:0.85rem;color:#888;margin-bottom:1.2rem}
+    #admin-modal input{width:100%;padding:0.75rem 1rem;border:1.5px solid #ddd;border-radius:10px;font-size:1rem;text-align:center;letter-spacing:0.15em;outline:none;margin-bottom:0.9rem;font-family:'Inter',sans-serif}
+    #admin-modal input:focus{border-color:#06C49A}
+    #admin-modal input.error{border-color:#FF6B6B}
+    #admin-modal .am-btn{width:100%;padding:0.8rem;background:#06C49A;color:white;border:none;border-radius:10px;font-weight:700;font-size:0.95rem;cursor:pointer;font-family:'Inter',sans-serif}
+    #admin-modal .am-cancel{margin-top:0.7rem;font-size:0.82rem;color:#aaa;cursor:pointer;display:block}
+    #admin-modal .am-logout{margin-top:0.6rem;font-size:0.82rem;color:#FF6B6B;cursor:pointer;display:none}
   </style>
 </head>
 <body>
@@ -1707,6 +1732,82 @@ function _saveEdit(type,eid,nd){
 
 // Re-render pour afficher les boutons maintenant
 setTimeout(function(){renderPhotos();renderVideos();renderArticles();},200);
+</script>
+
+<!-- ── ADMIN LOCK ── -->
+<div id="admin-lock" onclick="adminToggle()" title="Admin">🔒</div>
+<div id="admin-modal-overlay" onclick="if(event.target===this)adminCloseModal()">
+  <div id="admin-modal">
+    <div class="am-icon" id="am-icon">🔐</div>
+    <div class="am-title" id="am-title">Espace administrateur</div>
+    <div class="am-sub" id="am-sub">Entre ton mot de passe pour gérer ton portfolio</div>
+    <input type="password" id="am-pw" placeholder="••••••••" />
+    <button class="am-btn" onclick="adminLogin()">Accéder</button>
+    <span class="am-cancel" onclick="adminCloseModal()">Annuler</span>
+    <span class="am-logout" id="am-logout" onclick="adminLogout()">🔒 Verrouiller le portfolio</span>
+  </div>
+</div>
+<script>
+var _adminPw = 'doudoush';
+var _adminActive = false;
+
+function adminToggle() {
+  if (_adminActive) {
+    document.getElementById('am-icon').textContent = '🔓';
+    document.getElementById('am-title').textContent = 'Mode admin actif';
+    document.getElementById('am-sub').textContent = 'Tu es connectée. Les boutons Modifier/Supprimer sont visibles.';
+    document.getElementById('am-logout').style.display = 'block';
+    document.querySelector('#admin-modal .am-btn').style.display = 'none';
+    document.getElementById('am-pw').style.display = 'none';
+    document.querySelector('#admin-modal .am-cancel').style.display = 'none';
+  } else {
+    document.getElementById('am-icon').textContent = '🔐';
+    document.getElementById('am-title').textContent = 'Espace administrateur';
+    document.getElementById('am-sub').textContent = 'Entre ton mot de passe pour gérer ton portfolio';
+    document.getElementById('am-logout').style.display = 'none';
+    document.querySelector('#admin-modal .am-btn').style.display = 'block';
+    document.getElementById('am-pw').style.display = 'block';
+    document.querySelector('#admin-modal .am-cancel').style.display = 'block';
+    document.getElementById('am-pw').value = '';
+    document.getElementById('am-pw').classList.remove('error');
+    setTimeout(function(){ document.getElementById('am-pw').focus(); }, 200);
+  }
+  document.getElementById('admin-modal-overlay').classList.add('open');
+}
+
+function adminCloseModal() {
+  document.getElementById('admin-modal-overlay').classList.remove('open');
+}
+
+function adminLogin() {
+  var pw = document.getElementById('am-pw').value;
+  if (pw === _adminPw) {
+    _adminActive = true;
+    document.body.classList.add('admin-mode');
+    document.getElementById('admin-lock').textContent = '🔓';
+    document.getElementById('admin-lock').style.borderColor = '#06C49A';
+    adminCloseModal();
+  } else {
+    var input = document.getElementById('am-pw');
+    input.classList.add('error');
+    input.value = '';
+    input.placeholder = 'Mot de passe incorrect ❌';
+    setTimeout(function(){ input.classList.remove('error'); input.placeholder = '••••••••'; }, 2000);
+  }
+}
+
+function adminLogout() {
+  _adminActive = false;
+  document.body.classList.remove('admin-mode');
+  document.getElementById('admin-lock').textContent = '🔒';
+  document.getElementById('admin-lock').style.borderColor = '#ddd';
+  adminCloseModal();
+}
+
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Enter' && document.getElementById('admin-modal-overlay').classList.contains('open')) adminLogin();
+  if (e.key === 'Escape') adminCloseModal();
+});
 </script>
 </body>
 </html>
