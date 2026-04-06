@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><title>Récupération Doudoush</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,sans-serif;background:#f5f5f5;padding:1.5rem}
+.box{background:white;border-radius:16px;padding:2rem;max-width:540px;margin:auto;box-shadow:0 4px 30px rgba(0,0,0,.1)}
+h2{font-size:1.3rem;margin-bottom:.5rem}
+.sub{color:#777;font-size:.88rem;margin-bottom:1.5rem;line-height:1.6}
+.btn{width:100%;background:#FF6B6B;color:white;border:none;padding:1rem;border-radius:12px;font-size:1.1rem;font-weight:700;cursor:pointer;margin-top:.5rem}
+.btn:disabled{background:#ccc}
+.log{margin-top:1.2rem;background:#f9f9f9;border-radius:10px;padding:1rem;font-size:.82rem;line-height:2;max-height:380px;overflow-y:auto;display:none}
+.ok{color:#06C49A;font-weight:600}.err{color:#FF6B6B;font-weight:600}.info{color:#444}
+.prog{width:100%;height:8px;background:#eee;border-radius:4px;margin-top:1rem;overflow:hidden}
+.bar{height:100%;background:#FF6B6B;border-radius:4px;transition:width .3s;width:0}
+</style></head>
+<body><div class="box">
+<div style="font-size:2.8rem;margin-bottom:.7rem">🚑</div>
+<h2>Récupération complète du portfolio</h2>
+<p class="sub">Ce bouton va récupérer <b>toutes tes vidéos et photos</b> stockées dans Safari et les publier sur GitHub pour que tes clients voient tout.</p>
+<button class="btn" id="btn" onclick="go()">▶️ Démarrer la récupération</button>
+<div class="prog"><div class="bar" id="bar"></div></div>
+<div class="log" id="log"></div>
+</div>
+<script>
+var REPO='doudoushco/doudoushco.github.io';
+var DB_NAME='doudoush_db',STORE='videos';
+var logEl,barEl;
+function L(m,c){if(!logEl){logEl=document.getElementById('log');logEl.style.display='block';}var d=document.createElement('div');d.className=c||'info';d.textContent=m;logEl.appendChild(d);logEl.scrollTop=logEl.scrollHeight;}
+function P(n){if(!barEl)barEl=document.getElementById('bar');barEl.style.width=n+'%';}
+function b2b(blob){return new Promise(function(res,rej){var fr=new FileReader();fr.onload=function(e){res(e.target.result.split(',')[1]);};fr.onerror=rej;fr.readAsDataURL(blob);});}
+function s2b(str){var enc=new TextEncoder().encode(str);var bin='';for(var i=0;i<enc.length;i+=8192)bin+=String.fromCharCode.apply(null,enc.subarray(i,i+8192));return btoa(bin);}
+function openDB(){return new Promise(function(res,rej){var q=indexedDB.open(DB_NAME,1);q.onsuccess=function(e){res(e.target.result);};q.onerror=function(e){rej(e.target.error);};q.onupgradeneeded=function(e){e.target.result.createObjectStore(STORE);}});}
+function allBlobs(db){return new Promise(function(res,rej){var rows=[],tx=db.transaction(STORE,'readonly'),req=tx.objectStore(STORE).openCursor();req.onsuccess=function(e){var c=e.target.result;if(c){rows.push({key:c.key,blob:c.value});c.continue();}else res(rows);};req.onerror=function(e){rej(e.target.error);};});}
+async function apiGet(path,tk){var r=await fetch('https://api.github.com/repos/'+REPO+'/contents/'+path,{headers:{Authorization:'Bearer '+tk,Accept:'application/vnd.github+json'}});return r.ok?r.json():null;}
+async function apiPut(path,b64,sha,msg,tk){var body={message:msg,content:b64};if(sha)body.sha=sha;var r=await fetch('https://api.github.com/repos/'+REPO+'/contents/'+path,{method:'PUT',headers:{Authorization:'Bearer '+tk,Accept:'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify(body)});var d=await r.json();if(!r.ok)throw new Error(d.message||'erreur');return d;}
+
+async function go(){
+  var btn=document.getElementById('btn');btn.disabled=true;btn.textContent='⏳ En cours...';
+  try{
+    var tk=localStorage.getItem('gh_deploy_token')||'';
+    if(!tk){tk=prompt('Entre ton token GitHub (ghp_...) :');if(tk)localStorage.setItem('gh_deploy_token',tk);}
+    if(!tk)throw new Error('Token manquant');
+
+    L('📥 Lecture du site...');P(5);
+    var gf=await apiGet('index.html',tk);
+    if(!gf)throw new Error('index.html introuvable');
+    var sha=gf.sha;
+    var bin=atob(gf.content.replace(/\n/g,'')),arr=new Uint8Array(bin.length);
+    for(var i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
+    var html=new TextDecoder('utf-8').decode(arr);
+    L('✅ Site lu ('+Math.round(html.length/1024)+' KB)','ok');
+
+    var m=html.match(/const PRELOADED_DATA = (\{[\s\S]*?\});/);
+    if(!m)throw new Error('PRELOADED_DATA introuvable');
+    var data=JSON.parse(m[1]);
+    L('📊 '+data.photo.length+' photos, '+data.video.length+' vidéos publiées actuellement');
+
+    // Vidéos IndexedDB
+    L('');L('📹 Lecture vidéos IndexedDB...');P(12);
+    var blobs=[];
+    try{var db=await openDB();blobs=await allBlobs(db);L(blobs.length>0?'✅ '+blobs.length+' vidéo(s) dans Safari':'⚠️ Aucune vidéo locale',blobs.length>0?'ok':'err');}
+    catch(e){L('⚠️ IndexedDB: '+e.message,'err');}
+
+    var ghVids=[];
+    try{var gv=await apiGet('videos',tk);if(gv)ghVids=gv.map(function(f){return f.name;});}catch(e){}
+    L('🗂️ '+ghVids.length+' vidéo(s) déjà sur GitHub');
+
+    var vUp=0;
+    for(var i=0;i<blobs.length;i++){
+      var bk=blobs[i].key,bb=blobs[i].blob;
+      var ext=(bb.type||'video/mp4').split('/')[1]||'mp4';
+      var fn=bk+'.'+ext;
+      P(12+Math.round(35*i/Math.max(blobs.length,1)));
+      if(ghVids.indexOf(fn)>=0){L('⏭️ '+bk.substring(0,12)+'... déjà présente');continue;}
+      try{
+        L('⬆️ Upload '+(i+1)+'/'+blobs.length+': '+bk.substring(0,12)+'...');
+        var b64=await b2b(bb);
+        await apiPut('videos/'+fn,b64,null,'Video '+bk,tk);
+        var entry=data.video.find(function(v){return v.videoId===bk;});
+        if(entry){entry.videoUrl='https://doudoushco.github.io/videos/'+fn;entry.link=entry.videoUrl;delete entry.videoId;delete entry.videoName;}
+        vUp++;L('✅ '+(entry?entry.title:fn.substring(0,16))+' uploadée!','ok');
+      }catch(e){L('❌ '+bk.substring(0,12)+': '+e.message,'err');}
+    }
+
+    // Photos localStorage
+    L('');L('📸 Lecture photos localStorage...');P(50);
+    var lsP=[];
+    try{var raw=localStorage.getItem('doudoush_photos');if(raw)lsP=JSON.parse(raw);}catch(e){}
+    var existIds=new Set(data.photo.map(function(p){return p.id;}));
+    L(lsP.length+' photo(s) dans Safari');
+
+    var pUp=0;
+    for(var i=0;i<lsP.length;i++){
+      var p=lsP[i];P(50+Math.round(25*i/Math.max(lsP.length,1)));
+      if(existIds.has(p.id))continue;
+      if(p.imgUrl&&p.imgUrl.indexOf('githubusercontent')>=0){
+        data.photo.unshift(Object.assign({},p,{imgData:''}));existIds.add(p.id);pUp++;
+        L('✅ '+p.title+' (URL)','ok');continue;
+      }
+      if(p.imgData&&p.imgData.length>100){
+        try{
+          L('⬆️ Photo: '+p.title+'...');
+          var b64=p.imgData.split(',')[1]||p.imgData;
+          await apiPut('images/'+p.id+'.jpg',b64,null,'Photo '+p.title,tk);
+          data.photo.unshift(Object.assign({},p,{imgData:'',imgUrl:'https://raw.githubusercontent.com/'+REPO+'/main/images/'+p.id+'.jpg'}));
+          existIds.add(p.id);pUp++;L('✅ '+p.title+' uploadée!','ok');
+        }catch(e){L('❌ '+p.title+': '+e.message,'err');}
+      }
+    }
+
+    // Publier
+    L('');L('🚀 Publication finale...');P(80);
+    data.video.forEach(function(v){delete v._blobUrl;delete v.videoId;});
+    data.photo.forEach(function(p){if(p.imgUrl)p.imgData='';});
+    var newHtml=html.replace(/const PRELOADED_DATA = \{[\s\S]*?\};/,'const PRELOADED_DATA = '+JSON.stringify(data)+';');
+    newHtml=newHtml.replace(/(<body[^>]*?)\s+admin-mode/g,'$1').replace(/class="\s*"/g,'');
+    newHtml=newHtml.replace(/⏳ Publication\.\.\./g,'🚀 Publier le site').replace(/✅ Publié !/g,'🚀 Publier le site');
+    newHtml=newHtml.replace(/id="modal-save" style="display:[^"]*"/g,'id="modal-save" style="display:none"');
+    P(92);
+    await apiPut('index.html',s2b(newHtml),sha,'Recuperation complete portfolio',tk);
+    P(100);
+    L('');L('🎉 TERMINÉ ! '+vUp+' vidéo(s) et '+pUp+' photo(s) récupérées','ok');
+    L('👉 Attends 2 min puis recharge doudoushco.github.io','ok');
+    btn.textContent='✅ Terminé !';btn.style.background='#06C49A';
+  }catch(err){L('❌ ERREUR: '+err.message,'err');btn.disabled=false;btn.textContent='🔄 Réessayer';}
+}
+</script></body></html>
