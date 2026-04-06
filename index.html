@@ -1384,16 +1384,32 @@
         const btn = document.querySelector('.btn-modal-save');
         btn.textContent = 'Traitement...';
         btn.disabled = true;
-        resizeImage(fileInput.files[0], 900, 700, 0.82).then(base64 => {
-          data.imgData = base64;
-          data.imgUrl  = '';
-          data.id = uid();
-          const items = load('photo');
-          items.unshift(data);
-          save('photo', items);
-          closeModal();
-          renderPhotos();
-        });
+        resizeImage(fileInput.files[0], 900, 700, 0.82).then(async function(base64) {
+          try {
+            var _tk = localStorage.getItem('gh_deploy_token') || '';
+            if (_tk) {
+              btn.textContent = '⬆️ Upload...';
+              var _pid = uid();
+              var _pp = 'images/' + _pid + '.jpg';
+              var _b = base64.split(',')[1];
+              var _gr = await fetch('https://api.github.com/repos/doudoushco/doudoushco.github.io/contents/' + _pp, {
+                method: 'PUT',
+                headers: { 'Authorization': 'Bearer ' + _tk, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: 'Photo ' + _pid, content: _b })
+              });
+              if (_gr.ok) {
+                data.imgUrl  = 'https://raw.githubusercontent.com/doudoushco/doudoushco.github.io/main/images/' + _pid + '.jpg';
+                data.imgData = base64;
+              } else { data.imgData = base64; data.imgUrl = ''; }
+            } else { data.imgData = base64; data.imgUrl = ''; }
+            data.id = uid();
+            const items = load('photo');
+            items.unshift(data);
+            save('photo', items);
+            closeModal();
+            renderPhotos();
+          } catch(e) { btn.textContent = '🔄 Réessayer'; btn.disabled = false; }
+        }).catch(function() { btn.textContent = '🔄 Réessayer'; btn.disabled = false; });
         return;
       }
     }
