@@ -1615,6 +1615,10 @@
         "const GITHUB_TOKEN = '';"
       );
 
+      // Nettoyer: enlever admin-mode du body pour les visiteurs
+      newHtml = newHtml.replace(/(<body[^>]*)\s+admin-mode/g, '$1');
+      newHtml = newHtml.replace(/class="\s*"/g, '');
+
       // 4. Uploader le HTML
       msg.textContent = 'Upload du fichier HTML...';
       const htmlSha = await getFileSha(token, repo, 'index.html');
