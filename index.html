@@ -1594,7 +1594,12 @@
         const r = await fetch('https://doudoushco.github.io?_t=' + Date.now());
         baseHtml = await r.text();
       } catch(_) {
-        baseHtml = document.documentElement.outerHTML;
+        baseHtml;
+      try {
+        const _rb = await fetch('https://doudoushco.github.io/index.html?_v=' + Date.now());
+        const _txt = await _rb.text();
+        baseHtml = (_txt && _txt.length > 10000) ? _txt : document.documentElement.outerHTML;
+      } catch(_e) { baseHtml = document.documentElement.outerHTML; }
       }
 
       let newHtml = baseHtml.replace(
