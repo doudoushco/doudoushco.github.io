@@ -1412,8 +1412,16 @@
             }
             closeModal();
             renderPhotos();
-          } catch(e) { btn.textContent = '🔄 Réessayer'; btn.disabled = false; localStorage.setItem('_dbg_err', JSON.stringify({msg: e && e.message, stack: e && e.stack && e.stack.substring(0,300), ts: Date.now()})); }
-        }).catch(function(e) { btn.textContent = '🔄 Réessayer'; btn.disabled = false; localStorage.setItem('_dbg_err', JSON.stringify({msg: 'CATCH:' + (e && e.message), ts: Date.now()})); });
+          } catch(e) {
+            var _em = e ? (e.message || String(e)) : 'erreur inconnue';
+            btn.textContent = '🔄 Réessayer'; btn.disabled = false;
+            alert('❌ ERREUR PHOTO:\n' + _em);
+          }
+        }).catch(function(e) {
+          var _em = e ? (e.message || String(e)) : 'erreur inconnue';
+          btn.textContent = '🔄 Réessayer'; btn.disabled = false;
+          alert('❌ ERREUR resizeImage:\n' + _em);
+        });
         return;
       }
     }
