@@ -1098,9 +1098,9 @@
       <div class="photo-card">
         <div class="photo-frame">
           ${p.imgData
-            ? `<img src="${p.imgData}" alt="${esc(p.title)}" loading="lazy" style="object-position:${p.objPos||'center'}"/>`
+            ? `<img src="${p.imgData}" alt="${esc(p.title)}" loading="lazy"/>`
             : p.imgUrl
-              ? `<img src="${esc(p.imgUrl)}" alt="${esc(p.title)}" loading="lazy" style="object-position:${p.objPos||'center'}"/>`
+              ? `<img src="${esc(p.imgUrl)}" alt="${esc(p.title)}" loading="lazy"/>`
               : `<span class="photo-emoji">${p.emoji || '🖼️'}</span>`}
         </div>
         <div class="photo-info">
@@ -1811,122 +1811,149 @@ document.addEventListener('keydown', function(e){
 </script>
 
 <script>
-// ── Sélecteur de position d'affichage ──────────────────────────
+// ── Sélecteur de zone d'affichage photo ──
 window._selectedPos = 'center';
+window._pendingPos  = null;
+window._pendingPosId = null;
 
-var _origPreviewPhoto = previewPhoto;
+// 1. Intercepter save() pour injecter objPos sans toucher au flow existant
+var _saveBase = save;
+save = function(type, items) {
+  if (type === 'photo' && window._pendingPos) {
+    var pos = window._pendingPos;
+    var pid = window._pendingPosId;
+    items = items.map(function(item, idx) {
+      if (pid ? item.id === pid : idx === 0) {
+        return Object.assign({}, item, { objPos: pos });
+      }
+      return item;
+    });
+    window._pendingPos = null;
+    window._pendingPosId = null;
+  }
+  _saveBase(type, items);
+};
+
+// 2. Intercepter submitModal juste pour enregistrer la position voulue
+var _smPosBase = submitModal;
+submitModal = function() {
+  if (currentModalType === 'photo') {
+    window._pendingPos   = window._selectedPos || 'center';
+    window._pendingPosId = (typeof _editId !== 'undefined' && _editId) ? _editId : null;
+  }
+  _smPosBase();
+};
+
+// 3. Appliquer object-position après chaque render de photos
+var _rpPosBase = renderPhotos;
+renderPhotos = function() {
+  _rpPosBase();
+  setTimeout(function() {
+    var items = load('photo');
+    var grid  = document.getElementById('photo-grid');
+    if (!grid) return;
+    var imgs  = grid.querySelectorAll('.photo-frame img');
+    items.forEach(function(item, i) {
+      if (imgs[i]) imgs[i].style.objectPosition = item.objPos || 'center';
+    });
+  }, 50);
+};
+
+// 4. Afficher le sélecteur de zone dans le modal photo
+var _origPP = previewPhoto;
 previewPhoto = function(input) {
   var file = input.files[0]; if (!file) return;
   var reader = new FileReader();
   reader.onload = function(e) {
     window._selectedPos = 'center';
-    var preview = document.getElementById('f-preview');
     var img = document.getElementById('f-preview-img');
     img.src = e.target.result;
-    img.style.objectFit = 'cover';
     img.style.objectPosition = 'center';
-    preview.style.display = 'block';
-    _showPosSelector(e.target.result);
+    document.getElementById('f-preview').style.display = 'block';
+    _buildPosSelector(e.target.result, null);
   };
   reader.readAsDataURL(file);
 };
 
-function _showPosSelector(src) {
-  if (document.getElementById('pos-selector')) document.getElementById('pos-selector').remove();
-  var zones = [
-    ['0% 0%','↖'],['50% 0%','↑'],['100% 0%','↗'],
-    ['0% 50%','←'],['50% 50%','·'],['100% 50%','→'],
-    ['0% 100%','↙'],['50% 100%','↓'],['100% 100%','↘']
-  ];
-  var wrapper = document.createElement('div');
-  wrapper.id = 'pos-selector';
-  wrapper.style = 'margin-top:0.8rem;';
-  wrapper.innerHTML = '<p style="font-size:0.8rem;font-weight:600;color:#555;margin-bottom:0.5rem;">📍 Clique sur la zone à afficher dans la carte :</p>';
-  var frame = document.createElement('div');
-  frame.style = 'position:relative;width:100%;aspect-ratio:4/3;border-radius:10px;overflow:hidden;border:2px solid #FFD166;';
-  var previewImg = document.createElement('img');
-  previewImg.id = 'pos-preview-img';
-  previewImg.src = src;
-  previewImg.style = 'width:100%;height:100%;object-fit:cover;object-position:center;display:block;';
-  frame.appendChild(previewImg);
-  var grid = document.createElement('div');
-  grid.style = 'position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);';
-  zones.forEach(function(z, i) {
-    var cell = document.createElement('div');
-    cell.dataset.pos = z[0];
-    cell.style = 'cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:rgba(255,255,255,0.5);transition:background 0.15s;border:1px solid rgba(255,255,255,0.1);';
-    if (i === 4) { cell.style.background = 'rgba(255,209,102,0.35)'; cell.style.color = 'white'; }
-    cell.onmouseover = function() { if(this.dataset.pos !== window._selectedPos) this.style.background='rgba(255,255,255,0.2)'; };
-    cell.onmouseout  = function() { if(this.dataset.pos !== window._selectedPos) this.style.background='transparent'; };
-    cell.onclick = function() {
-      window._selectedPos = this.dataset.pos;
-      document.getElementById('pos-preview-img').style.objectPosition = this.dataset.pos;
-      document.getElementById('f-preview-img').style.objectPosition = this.dataset.pos;
-      grid.querySelectorAll('div').forEach(function(c){ c.style.background='transparent'; c.style.color='rgba(255,255,255,0.5)'; });
-      this.style.background = 'rgba(255,209,102,0.5)';
-      this.style.color = 'white';
-    };
-    grid.appendChild(cell);
-  });
-  frame.appendChild(grid);
-  wrapper.appendChild(frame);
-  var preview = document.getElementById('f-preview');
-  if (preview) preview.parentNode.insertBefore(wrapper, preview.nextSibling);
-}
-
-// Sélecteur sur photo existante (Modifier)
-var _eiPos = editItem;
+// 5. Afficher sélecteur sur photo existante (Modifier)
+var _eiPosBase = editItem;
 editItem = function(type, id) {
-  _eiPos(type, id);
+  _eiPosBase(type, id);
   if (type !== 'photo') return;
   setTimeout(function() {
     var items = load('photo');
-    var item = items.find(function(x){ return x.id === id; });
+    var item  = items.find(function(x){ return x.id === id; });
     if (!item) return;
     var src = item.imgData || item.imgUrl || '';
     if (!src) return;
     window._selectedPos = item.objPos || 'center';
-    _showPosSelector(src);
-    var ppi = document.getElementById('pos-preview-img');
-    if (ppi) ppi.style.objectPosition = window._selectedPos;
-    // Marquer la zone active
-    setTimeout(function(){
-      var grid = document.querySelector('#pos-selector div[style*="grid"]');
-      if (!grid) return;
-      grid.querySelectorAll('div').forEach(function(c){
-        c.style.background = 'transparent'; c.style.color = 'rgba(255,255,255,0.5)';
-        if (c.dataset.pos === window._selectedPos) { c.style.background='rgba(255,209,102,0.5)'; c.style.color='white'; }
-      });
-    }, 50);
+    _buildPosSelector(src, item.objPos || 'center');
   }, 300);
 };
 
-// Sauvegarder la position dans les données
-var _smPos = submitModal;
-submitModal = function() {
-  if (currentModalType === 'photo') {
-    var eid = (typeof _editId !== 'undefined') ? _editId : null;
-    var fi = document.getElementById('f-file');
-    var hasFile = fi && fi.files && fi.files[0];
-    // Injecter la position dans les données sauvegardées
-    var _origSave = MODAL_CONFIGS.photo.save;
-    MODAL_CONFIGS.photo.save = function() {
-      var d = _origSave();
-      d.objPos = window._selectedPos || 'center';
-      MODAL_CONFIGS.photo.save = _origSave; // restaurer
-      return d;
-    };
-  }
-  _smPos();
-};
+function _buildPosSelector(src, activePos) {
+  var old = document.getElementById('pos-sel');
+  if (old) old.remove();
 
-// Nettoyer le sélecteur à la fermeture
-var _cmPos = closeModal;
+  var zones = [
+    ['0% 0%','↖'],['50% 0%','↑'],['100% 0%','↗'],
+    ['0% 50%','←'],['50% 50%','⬤'],['100% 50%','→'],
+    ['0% 100%','↙'],['50% 100%','↓'],['100% 100%','↘']
+  ];
+  var cur = activePos || '50% 50%';
+
+  var wrap = document.createElement('div');
+  wrap.id  = 'pos-sel';
+  wrap.innerHTML = '<p style="font-size:0.8rem;font-weight:600;color:#555;margin:0.8rem 0 0.4rem;">📍 Zone à afficher dans la carte :</p>';
+
+  var frame = document.createElement('div');
+  frame.style = 'position:relative;width:100%;aspect-ratio:4/3;border-radius:10px;overflow:hidden;border:2px solid #FFD166;';
+
+  var pImg = document.createElement('img');
+  pImg.id  = 'pos-prev';
+  pImg.src = src;
+  pImg.style = 'width:100%;height:100%;object-fit:cover;object-position:'+cur+';display:block;';
+  frame.appendChild(pImg);
+
+  var grid = document.createElement('div');
+  grid.style = 'position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);';
+
+  zones.forEach(function(z, i) {
+    var cell = document.createElement('div');
+    cell.dataset.pos = z[0];
+    var isActive = z[0] === cur;
+    cell.style = 'cursor:pointer;display:flex;align-items:center;justify-content:center;'
+      + 'font-size:1rem;transition:background 0.15s;border:1px solid rgba(255,255,255,0.15);'
+      + 'background:'+(isActive?'rgba(255,209,102,0.55)':'transparent')+';'
+      + 'color:'+(isActive?'#fff':'rgba(255,255,255,0.4)')+';';
+    cell.textContent = z[1];
+    cell.onclick = function() {
+      window._selectedPos = this.dataset.pos;
+      pImg.style.objectPosition = this.dataset.pos;
+      var fi = document.getElementById('f-preview-img');
+      if (fi) fi.style.objectPosition = this.dataset.pos;
+      grid.querySelectorAll('div').forEach(function(c){
+        c.style.background='transparent'; c.style.color='rgba(255,255,255,0.4)';
+      });
+      this.style.background='rgba(255,209,102,0.55)'; this.style.color='#fff';
+    };
+    grid.appendChild(cell);
+  });
+
+  frame.appendChild(grid);
+  wrap.appendChild(frame);
+
+  var preview = document.getElementById('f-preview');
+  if (preview) preview.parentNode.insertBefore(wrap, preview.nextSibling);
+}
+
+// 6. Nettoyer à la fermeture
+var _cmPosBase = closeModal;
 closeModal = function() {
-  var ps = document.getElementById('pos-selector');
+  var ps = document.getElementById('pos-sel');
   if (ps) ps.remove();
   window._selectedPos = 'center';
-  _cmPos();
+  _cmPosBase();
 };
 </script>
 </body>
