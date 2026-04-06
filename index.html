@@ -1412,8 +1412,8 @@
             }
             closeModal();
             renderPhotos();
-          } catch(e) { btn.textContent = '🔄 Réessayer'; btn.disabled = false; }
-        }).catch(function() { btn.textContent = '🔄 Réessayer'; btn.disabled = false; });
+          } catch(e) { btn.textContent = '🔄 Réessayer'; btn.disabled = false; localStorage.setItem('_dbg_err', JSON.stringify({msg: e && e.message, stack: e && e.stack && e.stack.substring(0,300), ts: Date.now()})); }
+        }).catch(function(e) { btn.textContent = '🔄 Réessayer'; btn.disabled = false; localStorage.setItem('_dbg_err', JSON.stringify({msg: 'CATCH:' + (e && e.message), ts: Date.now()})); });
         return;
       }
     }
