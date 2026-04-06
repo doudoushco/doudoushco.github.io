@@ -1599,7 +1599,12 @@
         const _rb = await fetch('https://doudoushco.github.io/index.html?_v=' + Date.now());
         const _txt = await _rb.text();
         baseHtml = (_txt && _txt.length > 10000) ? _txt : document.documentElement.outerHTML;
-      } catch(_e) { baseHtml = document.documentElement.outerHTML; }
+      } catch(_e) { baseHtml;
+      try {
+        const rb_ = await fetch('https://doudoushco.github.io/index.html');
+        const txt_ = await rb_.text();
+        baseHtml = (txt_ && txt_.length > 10000) ? txt_ : document.documentElement.outerHTML;
+      } catch(e_) { baseHtml = document.documentElement.outerHTML; } }
       }
 
       let newHtml = baseHtml.replace(
