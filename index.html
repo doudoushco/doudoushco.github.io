@@ -1399,13 +1399,17 @@
               });
               if (_gr.ok) {
                 data.imgUrl  = 'https://raw.githubusercontent.com/doudoushco/doudoushco.github.io/main/images/' + _pid + '.jpg';
-                data.imgData = base64;
+                data.imgData = '';
               } else { data.imgData = base64; data.imgUrl = ''; }
             } else { data.imgData = base64; data.imgUrl = ''; }
             data.id = uid();
             const items = load('photo');
             items.unshift(data);
-            save('photo', items);
+            const slim = items.map(function(p){ return p.imgUrl ? Object.assign({},p,{imgData:''}) : p; });
+            try { save('photo', slim); } catch(qe) {
+              const ultra = slim.map(function(p){ return Object.assign({},p,{imgData:''}); });
+              save('photo', ultra);
+            }
             closeModal();
             renderPhotos();
           } catch(e) { btn.textContent = '🔄 Réessayer'; btn.disabled = false; }
