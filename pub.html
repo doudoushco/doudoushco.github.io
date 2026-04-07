@@ -1,0 +1,45 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"/><title>Publication</title>
+<style>body{font-family:-apple-system,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#f5f5f5;}
+.box{background:white;padding:2.5rem;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.1);max-width:440px;width:100%;text-align:center;}
+h2{margin:0 0 1rem;} #msg{color:#555;margin:1rem 0;} .ok{color:#06C49A;font-weight:700;font-size:1.1rem;} .err{color:#FF6B6B;font-weight:600;}
+a{color:#FF6B6B;font-weight:700;}</style></head><body><div class="box">
+<h2 id="title">&#x231B; Publication en cours...</h2>
+<p id="msg">Lecture des donn&eacute;es...</p>
+</div><script>
+(function(){
+var KEYS={video:"doudoush_videos",photo:"doudoush_photos",article:"doudoush_articles",links:"doudoush_links"};
+function load(k){try{var r=localStorage.getItem(KEYS[k]);return r?JSON.parse(r):[]}catch(e){return[]}}
+function b64(s){return btoa(unescape(encodeURIComponent(s)))}
+function msg(t,c){document.getElementById("msg").innerHTML=t;if(c)document.getElementById("title").className=c;}
+
+var token=localStorage.getItem("gh_deploy_token")||"";
+if(!token){token=prompt("Token GitHub (ghp_...) :");if(token)localStorage.setItem("gh_deploy_token",token);}
+if(!token){msg("&#x274C; Token manquant","err");return;}
+
+var data={video:load("video"),photo:load("photo"),article:load("article"),links:load("links")};
+msg("&#x1F4F8; "+data.photo.length+" photos trouv&eacute;es. R&eacute;cup&eacute;ration GitHub...");
+
+fetch("https://api.github.com/repos/doudoushco/doudoushco.github.io/contents/index.html",{headers:{"Authorization":"token "+token}})
+.then(function(r){return r.json();})
+.then(function(d){
+  if(!d.sha)throw new Error("Token invalide");
+  var html=decodeURIComponent(escape(atob(d.content.replace(/\n/g,""))));
+  msg("Mise &agrave; jour du contenu...");
+  var nh=html.replace(/const PRELOADED_DATA = \{[\s\S]*?\};/,"const PRELOADED_DATA = "+JSON.stringify(data)+";");
+  if(nh===html)throw new Error("Structure non reconnue");
+  msg("Envoi sur GitHub...");
+  return fetch("https://api.github.com/repos/doudoushco/doudoushco.github.io/contents/index.html",{
+    method:"PUT",headers:{"Authorization":"token "+token,"Content-Type":"application/json"},
+    body:JSON.stringify({message:"Sync "+data.photo.length+" photos",content:b64(nh),sha:d.sha})});
+})
+.then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d};});})
+.then(function(res){
+  if(!res.ok)throw new Error(res.d.message||"Erreur upload");
+  document.getElementById("title").innerHTML="&#x1F389; Site publi&eacute; !";
+  msg(data.photo.length+" photos en ligne !<br><br><a href='https://doudoushco.github.io' target='_blank'>&#x2192; Voir le site</a>");
+})
+.catch(function(e){
+  document.getElementById("title").innerHTML="&#x274C; Erreur";
+  msg(e.message,"err");
+});
+})();</script></body></html>
