@@ -1,0 +1,32 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"/><title>Export</title>
+<style>
+body{font-family:-apple-system,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#f5f5f5;}
+.box{background:white;padding:2rem;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.1);max-width:500px;width:100%;text-align:center;}
+h2{margin:0 0 0.5rem;} p{color:#555;margin:0 0 1rem;}
+textarea{width:100%;height:120px;border:1.5px solid #ddd;border-radius:8px;padding:0.75rem;font-size:0.75rem;font-family:monospace;resize:none;box-sizing:border-box;}
+button{background:linear-gradient(135deg,#06C49A,#00a0d6);color:white;border:none;border-radius:50px;padding:0.9rem 2rem;font-size:1rem;font-weight:700;cursor:pointer;width:100%;margin-top:0.75rem;}
+.count{font-weight:700;color:#06C49A;font-size:1.2rem;}
+</style></head><body><div class="box">
+<h2>&#x1F4E4; Export des donn&eacute;es</h2>
+<p id="info">Chargement...</p>
+<textarea id="out" readonly placeholder="Données..."></textarea>
+<button onclick="copyData()">&#x1F4CB; Copier et envoyer &agrave; Claude</button>
+<p id="copied" style="color:#06C49A;display:none;margin-top:0.5rem;">&#x2714; Copi&eacute; ! Colle maintenant dans le chat Claude.</p>
+</div><script>
+(function(){
+var KEYS={video:"doudoush_videos",photo:"doudoush_photos",article:"doudoush_articles",links:"doudoush_links"};
+function load(k){try{var r=localStorage.getItem(KEYS[k]);return r?JSON.parse(r):[]}catch(e){return[]}}
+var photos=load("photo"),videos=load("video"),articles=load("article"),links=load("links");
+var data={photo:photos,video:videos,article:articles,links:links};
+document.getElementById("info").innerHTML=
+  "<span class='count'>"+photos.length+"</span> photos &bull; "+
+  "<span class='count'>"+videos.length+"</span> vid&eacute;os trouv&eacute;es";
+document.getElementById("out").value=JSON.stringify(data);
+})();
+function copyData(){
+  var ta=document.getElementById("out");
+  ta.select();
+  document.execCommand("copy");
+  document.getElementById("copied").style.display="block";
+  document.querySelector("button").textContent="&#x2714; Copi&eacute; !";
+}</script></body></html>
