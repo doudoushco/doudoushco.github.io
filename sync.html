@@ -5,100 +5,66 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Sync Portfolio</title>
   <style>
-    body { font-family: -apple-system, sans-serif; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; margin:0; background:#f5f5f5; }
-    .card { background:white; padding:2rem; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.1); max-width:480px; width:100%; text-align:center; }
-    h2 { margin:0 0 0.5rem; }
-    p { color:#666; margin:0 0 1.5rem; }
-    .info { background:#f0faf6; border-radius:8px; padding:1rem; margin:1rem 0; font-size:0.85rem; text-align:left; color:#333; }
-    button { background:linear-gradient(135deg,#FF6B6B,#FFD166); color:#1C1C1C; border:none; border-radius:50px; padding:0.9rem 2rem; font-size:1rem; font-weight:700; cursor:pointer; width:100%; }
-    button:disabled { opacity:0.6; cursor:not-allowed; }
-    #status { margin-top:1rem; font-size:0.9rem; color:#333; min-height:40px; }
-    .success { color:#06C49A; font-weight:700; font-size:1.1rem; }
-    .error { color:#FF6B6B; font-weight:600; }
+    body{font-family:-apple-system,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#f5f5f5;}
+    .card{background:white;padding:2rem;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.1);max-width:480px;width:100%;text-align:center;}
+    h2{margin:0 0 0.5rem;} p{color:#666;margin:0 0 1.5rem;}
+    .info{background:#f0faf6;border-radius:8px;padding:1rem;margin:1rem 0;font-size:0.85rem;text-align:left;color:#333;}
+    button{background:linear-gradient(135deg,#FF6B6B,#FFD166);color:#1C1C1C;border:none;border-radius:50px;padding:0.9rem 2rem;font-size:1rem;font-weight:700;cursor:pointer;width:100%;}
+    button:disabled{opacity:0.6;cursor:not-allowed;}
+    #status{margin-top:1rem;font-size:0.9rem;color:#333;min-height:40px;}
+    .success{color:#06C49A;font-weight:700;font-size:1.1rem;} .error{color:#FF6B6B;font-weight:600;}
   </style>
 </head>
 <body>
 <div class="card">
-  <h2>🔄 Synchroniser le portfolio</h2>
+  <h2>&#x1F504; Synchroniser le portfolio</h2>
   <p>Ouvre cette page dans Safari (admin) pour publier tes vraies photos</p>
-  <div class="info" id="data-info">Chargement des données...</div>
-  <button id="btn-sync" onclick="doSync()">🚀 Synchroniser maintenant</button>
+  <div class="info" id="data-info">Chargement...</div>
+  <button id="btn-sync" onclick="doSync()">&#x1F680; Synchroniser maintenant</button>
   <div id="status"></div>
 </div>
 <script>
-const KEYS = { video:'doudoush_videos', photo:'doudoush_photos', article:'doudoush_articles', links:'doudoush_links' };
-function load(key) {
-  try { const r = localStorage.getItem(KEYS[key]); return r ? JSON.parse(r) : []; } catch { return []; }
+var KEYS={video:"doudoush_videos",photo:"doudoush_photos",article:"doudoush_articles",links:"doudoush_links"};
+function load(k){try{var r=localStorage.getItem(KEYS[k]);return r?JSON.parse(r):[]}catch(e){return[]}}
+function b64(s){return btoa(unescape(encodeURIComponent(s)))}
+(function(){
+  var p=load("photo"),v=load("video"),t=localStorage.getItem("gh_deploy_token");
+  document.getElementById("data-info").innerHTML=
+    "&#x1F4F8; Photos : <strong>"+p.length+"</strong><br>"+
+    "&#x1F3AC; Vid&eacute;os : <strong>"+v.length+"</strong><br>"+
+    "&#x1F511; Token : <strong>"+(t?"&#x2714; pr&eacute;sent":"&#x274C; manquant")+"</strong>"+
+    (p.length>0?"<br>1er titre : <em>"+(p[0].title||"?")+"</em>":"");
+})();
+function doSync(){
+  var btn=document.getElementById("btn-sync"),st=document.getElementById("status");
+  btn.disabled=true; btn.textContent="Synchronisation...";
+  var token=localStorage.getItem("gh_deploy_token")||"";
+  if(!token){token=prompt("Token GitHub (ghp_...) :");if(token)localStorage.setItem("gh_deploy_token",token);}
+  if(!token){st.innerHTML="<span class='error'>&#x274C; Token manquant</span>";btn.disabled=false;btn.textContent="Synchroniser maintenant";return;}
+  var data={video:load("video"),photo:load("photo"),article:load("article"),links:load("links")};
+  st.textContent="Récupération...";
+  fetch("https://api.github.com/repos/doudoushco/doudoushco.github.io/contents/index.html",{headers:{"Authorization":"token "+token}})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if(!d.sha)throw new Error("Token invalide ou repo introuvable");
+    var sha=d.sha;
+    var html=decodeURIComponent(escape(atob(d.content.replace(/\n/g,""))));
+    st.textContent="Mise à jour...";
+    var nh=html.replace(/const PRELOADED_DATA = \{[\s\S]*?\};/,"const PRELOADED_DATA = "+JSON.stringify(data)+";");
+    if(nh===html)throw new Error("Structure non reconnue dans index.html");
+    st.textContent="Publication...";
+    return fetch("https://api.github.com/repos/doudoushco/doudoushco.github.io/contents/index.html",{
+      method:"PUT",headers:{"Authorization":"token "+token,"Content-Type":"application/json"},
+      body:JSON.stringify({message:"Sync photos depuis admin",content:b64(nh),sha:sha})});
+  })
+  .then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d}});})
+  .then(function(res){
+    if(!res.ok)throw new Error(res.d.message||"Erreur upload");
+    st.innerHTML="<span class='success'>&#x1F389; "+data.photo.length+" photos publiées !</span><br><a href='https://doudoushco.github.io' target='_blank' style='color:#FF6B6B;font-weight:700;'>&#x2192; Voir le site</a>";
+    btn.textContent="&#x2714; Fait !";
+  })
+  .catch(function(e){st.innerHTML="<span class='error'>&#x274C; "+e.message+"</span>";btn.disabled=false;btn.textContent="Réessayer";});
 }
-function strToBase64(str) { return btoa(unescape(encodeURIComponent(str))); }
-
-window.onload = function() {
-  const photos = load('photo');
-  const videos = load('video');
-  const token = localStorage.getItem('gh_deploy_token');
-  document.getElementById('data-info').innerHTML =
-    '📸 Photos trouvées : <strong>' + photos.length + '</strong><br>' +
-    '🎬 Vidéos trouvées : <strong>' + videos.length + '</strong><br>' +
-    '🔑 Token GitHub : <strong>' + (token ? '✅ présent' : '❌ manquant') + '</strong><br>' +
-    (photos.length > 0 ? '1er titre : <em>' + (photos[0].title||'?') + '</em>' : '');
-};
-
-async function doSync() {
-  const btn = document.getElementById('btn-sync');
-  const status = document.getElementById('status');
-  btn.disabled = true;
-  btn.textContent = '⏳ Synchronisation...';
-  
-  let token = localStorage.getItem('gh_deploy_token') || '';
-  if (!token) {
-    token = prompt('Entre ton token GitHub (ghp_...) :');
-    if (token) localStorage.setItem('gh_deploy_token', token);
-  }
-  if (!token) { status.innerHTML = '<span class="error">❌ Token manquant</span>'; btn.disabled=false; btn.textContent='🚀 Synchroniser maintenant'; return; }
-  
-  const data = { video: load('video'), photo: load('photo'), article: load('article'), links: load('links') };
-  status.textContent = 'Récupération du site...';
-  
-  try {
-    // Get current SHA
-    const shaResp = await fetch('https://api.github.com/repos/doudoushco/doudoushco.github.io/contents/index.html', {
-      headers: { 'Authorization': 'token ' + token }
-    });
-    const shaData = await shaResp.json();
-    if (!shaData.sha) throw new Error('Impossible de récupérer le fichier. Token invalide ?');
-    const sha = shaData.sha;
-    
-    // Get current HTML properly decoded
-    const b64raw = shaData.content.replace(/\n/g,'');
-    const html = decodeURIComponent(escape(atob(b64raw)));
-    
-    status.textContent = 'Mise à jour du contenu...';
-    
-    // Replace PRELOADED_DATA
-    let newHtml = html.replace(
-      /const PRELOADED_DATA = \{[\s\S]*?\};/,
-      'const PRELOADED_DATA = ' + JSON.stringify(data) + ';'
-    );
-    
-    if (newHtml === html) throw new Error('Regex PRELOADED_DATA non trouvé dans le HTML');
-    
-    status.textContent = 'Publication sur GitHub...';
-    const putResp = await fetch('https://api.github.com/repos/doudoushco/doudoushco.github.io/contents/index.html', {
-      method: 'PUT',
-      headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: 'Sync photos depuis admin', content: strToBase64(newHtml), sha: sha })
-    });
-    const putData = await putResp.json();
-    if (!putResp.ok) throw new Error(putData.message || 'Erreur upload');
-    
-    status.innerHTML = '<span class="success">🎉 Synchronisé ! ' + data.photo.length + ' photos publiées.</span><br><a href="https://doudoushco.github.io" target="_blank">→ Voir le site</a>';
-    btn.textContent = '✅ Fait !';
-  } catch(e) {
-    status.innerHTML = '<span class="error">❌ ' + e.message + '</span>';
-    btn.disabled = false; btn.textContent = '🚀 Réessayer';
-  }
-}
-<\/script>
-</div>
+</script>
 </body>
 </html>
