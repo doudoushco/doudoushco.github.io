@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Photos Recovery</title>
+<style>
+body{font-family:sans-serif;max-width:600px;margin:40px auto;padding:20px;background:#f5f5f5;}
+h2{color:#333;}
+button{background:#e74c3c;color:white;border:none;padding:15px 30px;font-size:16px;border-radius:8px;cursor:pointer;width:100%;}
+button:disabled{background:#999;}
+#log{margin-top:20px;background:white;padding:15px;border-radius:8px;display:none;max-height:400px;overflow-y:auto;}
+.ok{color:#06C49A;font-weight:bold;}
+.err{color:#e74c3c;font-weight:bold;}
+.info{color:#555;}
+#bar-wrap{background:#ddd;border-radius:4px;height:10px;margin:10px 0;}
+#bar{background:#06C49A;height:10px;border-radius:4px;width:0%;transition:width 0.3s;}
+</style>
+</head>
+<body>
+<h2>📷 Récupération des Photos</h2>
+<p>Ce bouton lit tes photos depuis <strong>Safari</strong> et les publie sur GitHub. <strong>Vidéos non touchées.</strong></p>
+<div id="bar-wrap"><div id="bar"></div></div>
+<button id="btn" onclick="go()">🚀 Récupérer les Photos</button>
+<div id="log"></div>
+<script>
+var le,be;
+function L(m,c){if(!le){le=document.getElementById('log');le.style.display='block';}var d=document.createElement('div');d.className=c||'info';d.textContent=m;le.appendChild(d);le.scrollTop=le.scrollHeight;}
+function P(n){if(!be)be=document.getElementById('bar');be.style.width=n+'%';}
+function s2b(s){var e=new TextEncoder().encode(s);var b='';for(var i=0;i<e.length;i+=8192)b+=String.fromCharCode.apply(null,e.subarray(i,i+8192));return btoa(b);}
+async function aG(p,tk){var r=await fetch('https://api.github.com/repos/doudoushco/doudoushco.github.io/contents/'+p,{headers:{Authorization:'Bearer '+tk,Accept:'application/vnd.github+json'}});return r.ok?r.json():null;}
+async function aP(p,b64,sha,msg,tk){var body={message:msg,content:b64};if(sha)body.sha=sha;var r=await fetch('https://api.github.com/repos/doudoushco/doudoushco.github.io/contents/'+p,{method:'PUT',headers:{Authorization:'Bearer '+tk,Accept:'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify(body)});var d=await r.json();if(!r.ok)throw new Error(d.message||'err');return d;}
+async function go(){
+  var btn=document.getElementById('btn');btn.disabled=true;btn.textContent='En cours...';
+  try{
+    var tk=localStorage.getItem('gh_deploy_token')||'';
+    if(!tk){tk=prompt('Token GitHub (ghp_...) :');if(tk)localStorage.setItem('gh_deploy_token',tk);}
+    if(!tk)throw new Error('Token manquant');
+    
+    L('📖 Lecture du site en cours...');P(10);
+    var gf=await aG('index.html',tk);
+    if(!gf)throw new Error('index.html introuvable');
+    var sha=gf.sha;
+    var bin=atob(gf.content.replace(/\n/g,''));
+    var arr=new Uint8Array(bin.length);
+    for(var i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
+    var html=new TextDecoder('utf-8').decode(arr);
+    L('✅ Site lu ('+(Math.round(html.length/1024))+' KB)','ok');P(25);
+    
+    var m=html.match(/const PRELOADED_DATA = (\{[\s\S]*?\});/);
+    if(!m)throw new Error('PRELOADED_DATA introuvable');
+    var data=JSON.parse(m[1]);
+    L('📊 Actuellement: '+data.photo.length+' photos publiées');P(35);
+    
+    // Read photos from Safari localStorage
+    var lsP=[];
+    try{var raw=localStorage.getItem('doudoush_photos');if(raw)lsP=JSON.parse(raw);}catch(e){}
+    L('📷 '+lsP.length+' photo(s) trouvée(s) dans Safari'+(lsP.length>0?'':''),lsP.length>0?'ok':'err');P(45);
+    
+    if(lsP.length===0){
+      L('⚠️ Aucune photo locale trouvée. Tes photos sont peut-être déjà publiées.','err');
+      L('Vérification terminée - rien à faire.','info');
+      btn.textContent='Terminé';btn.disabled=false;return;
+    }
+    
+    // Build photo array: use Safari photos as the source of truth
+    var uploadedPhotos=[];
+    var existing=await aG('images',tk);
+    var existingFiles=existing?existing.map(function(f){return f.name;}):[]; 
+    L(existingFiles.length+' images déjà sur GitHub');P(50);
+    
+    for(var i=0;i<lsP.length;i++){
+      var p=lsP[i];P(50+Math.round(35*i/Math.max(lsP.length,1)));
+      var photoEntry=Object.assign({},p,{imgData:''});
+      
+      if(p.imgUrl&&(p.imgUrl.indexOf('github.io')>=0||p.imgUrl.indexOf('githubusercontent')>=0)){
+        // Already on GitHub with URL
+        uploadedPhotos.push(photoEntry);
+        L((i+1)+'/'+lsP.length+' ✅ '+p.title,'ok');
+      } else if(p.imgData&&p.imgData.length>100){
+        // Has base64 data - upload image file
+        var fname=p.id+'.jpg';
+        if(existingFiles.indexOf(fname)>=0){
+          photoEntry.imgUrl='https://doudoushco.github.io/images/'+fname;
+          uploadedPhotos.push(photoEntry);
+          L((i+1)+'/'+lsP.length+' ✅ '+p.title+' (déjà uploadée)','ok');
+        } else {
+          try{
+            var b64=p.imgData.split(',')[1]||p.imgData;
+            await aP('images/'+fname,b64,null,'Photo '+p.title,tk);
+            photoEntry.imgUrl='https://doudoushco.github.io/images/'+fname;
+            uploadedPhotos.push(photoEntry);
+            L((i+1)+'/'+lsP.length+' ✅ '+p.title,'ok');
+          }catch(e){
+            L((i+1)+'/'+lsP.length+' ⚠️ '+p.title+': '+e.message,'err');
+            uploadedPhotos.push(photoEntry);// add anyway
+          }
+        }
+      } else {
+        uploadedPhotos.push(photoEntry);
+        L((i+1)+'/'+lsP.length+' ✅ '+p.title,'ok');
+      }
+    }
+    
+    P(88);L('');L('📤 Publication finale...');
+    // Replace photo array in data, keep videos and articles untouched
+    data.photo=uploadedPhotos;
+    var newHtml=html.replace(/const PRELOADED_DATA = \{[\s\S]*?\};/,'const PRELOADED_DATA = '+JSON.stringify(data)+';');
+    await aP('index.html',s2b(newHtml),sha,'Photos récupérées: '+uploadedPhotos.length+' photos',tk);
+    P(100);
+    L('');
+    L('🎉 TERMINÉ ! '+uploadedPhotos.length+' photos publiées avec leurs vrais noms !','ok');
+    L('⏳ Attends 2-3 min puis recharge doudoushco.github.io','ok');
+    btn.textContent='✅ Terminé !';btn.style.background='#06C49A';
+  }catch(err){
+    L('❌ ERREUR: '+err.message,'err');
+    btn.disabled=false;btn.textContent='Réessayer';
+  }
+}
+</script>
+</body>
+</html>
