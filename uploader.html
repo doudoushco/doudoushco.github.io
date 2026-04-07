@@ -1,45 +1,191 @@
 <!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><title>Video Uploader</title></head>
-<body style="font-family:monospace;background:#0d1117;color:#c9d1d9;padding:20px;max-width:800px">
-<h2 style="color:#58a6ff">Upload Videos to GitHub Portfolio</h2>
-<p>Select all .mp4 files from <code>Downloads/videos_to_upload</code> folder:</p>
-<input type="file" id="fi" multiple accept=".mp4" style="margin:10px 0;display:block;color:#c9d1d9">
-<div id="progress" style="color:#ffa657;font-weight:bold;margin:10px 0"></div>
-<div id="log" style="font-size:13px;line-height:1.8"></div>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Photo Uploader - Doudoush</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:monospace;background:#0d1117;color:#c9d1d9;padding:24px;max-width:860px;margin:auto}
+h2{color:#58a6ff;margin-bottom:8px;font-size:1.3rem}
+p{color:#8b949e;margin-bottom:16px;font-size:14px}
+#dropzone{border:2px dashed #30363d;border-radius:10px;padding:40px;text-align:center;cursor:pointer;margin-bottom:20px;transition:.2s}
+#dropzone:hover{border-color:#58a6ff;background:#161b22}
+#dropzone input{display:none}
+#dropzone label{cursor:pointer;color:#58a6ff;font-size:15px}
+#progress-bar-wrap{background:#21262d;border-radius:6px;height:10px;margin:12px 0;display:none}
+#progress-bar{height:10px;border-radius:6px;background:#238636;transition:width .3s;width:0%}
+#status{font-weight:bold;color:#ffa657;margin:8px 0;min-height:20px}
+#log{margin-top:12px;font-size:13px;line-height:2;max-height:320px;overflow-y:auto;background:#161b22;border-radius:6px;padding:12px}
+.ok{color:#56d364}.err{color:#f85149}.skip{color:#6e7681}.info{color:#79c0ff}
+</style>
+</head>
+<body>
+<h2>📸 Uploader Photos → Portfolio</h2>
+<p>Sélectionne toutes tes photos (.jpg/.jpeg/.png) depuis <strong>Téléchargements</strong>. Elles seront uploadées et ajoutées automatiquement à ton portfolio.</p>
+
+<div id="dropzone">
+  <input type="file" id="fi" multiple accept=".jpg,.jpeg,.png,.webp">
+  <label for="fi">📁 Clique ici pour sélectionner tes photos<br><small style="color:#6e7681;font-size:12px">Sélectionne tout (Cmd+A) dans le dossier videos_to_upload ou Téléchargements</small></label>
+</div>
+<div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+<div id="status"></div>
+<div id="log"></div>
+
 <script>
-var TK=window._TK||'';
-var REPO='doudoushco/doudoushco.github.io';
-function log(msg,c){var d=document.getElementById('log');d.innerHTML+='<div style="color:'+(c||'#c9d1d9')+'">'+msg+'</div>';window.scrollTo(0,document.body.scrollHeight);}
-function prog(msg){document.getElementById('progress').textContent=msg;}
-function toB64(file){return new Promise((res,rej)=>{var r=new FileReader();r.onload=e=>res(e.target.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(file);})}
+var TK = localStorage.getItem('gh_deploy_token') || '';
+var REPO = 'doudoushco/doudoushco.github.io';
+var BASE = 'https://doudoushco.github.io';
+
+function log(msg,cls){
+  var d=document.getElementById('log');
+  d.innerHTML+='<div class="'+(cls||'')+'">'+(new Date().toLocaleTimeString())+' '+msg+'</div>';
+  d.scrollTop=d.scrollHeight;
+}
+function status(msg){document.getElementById('status').textContent=msg;}
+function setBar(pct){
+  document.getElementById('progress-bar-wrap').style.display='block';
+  document.getElementById('progress-bar').style.width=pct+'%';
+}
+
+function genId(){
+  var chars='abcdefghijklmnopqrstuvwxyz0123456789';
+  var id='';for(var i=0;i<20;i++) id+=chars[Math.floor(Math.random()*chars.length)];
+  return id;
+}
+
+function toB64(file){
+  return new Promise(function(res,rej){
+    var r=new FileReader();
+    r.onload=function(e){res(e.target.result.split(',')[1]);};
+    r.onerror=rej;
+    r.readAsDataURL(file);
+  });
+}
+
+async function compressImage(file, maxW, quality){
+  return new Promise(function(res){
+    var img=new Image();
+    var url=URL.createObjectURL(file);
+    img.onload=function(){
+      var w=img.width, h=img.height;
+      if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
+      var canvas=document.createElement('canvas');
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      URL.revokeObjectURL(url);
+      canvas.toBlob(function(blob){res(blob);}, 'image/jpeg', quality||0.82);
+    };
+    img.src=url;
+  });
+}
+
+async function uploadFile(path, b64, message){
+  // Check if exists
+  var chk=await fetch('https://api.github.com/repos/'+REPO+'/contents/'+path,{
+    headers:{'Authorization':'token '+TK,'Accept':'application/vnd.github.v3+json'}
+  });
+  var body={message:message,content:b64};
+  if(chk.ok){var ex=await chk.json();body.sha=ex.sha;}
+  var r=await fetch('https://api.github.com/repos/'+REPO+'/contents/'+path,{
+    method:'PUT',
+    headers:{'Authorization':'token '+TK,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
+    body:JSON.stringify(body)
+  });
+  return r;
+}
+
+async function updatePortfolio(newPhotos){
+  status('Mise à jour du portfolio...');
+  log('Téléchargement de index.html...','info');
+  var r=await fetch('https://api.github.com/repos/'+REPO+'/contents/index.html',{
+    headers:{'Authorization':'token '+TK,'Accept':'application/vnd.github.v3+json'}
+  });
+  var d=await r.json();
+  var html=atob(d.content.replace(/\n/g,''));
+  var sha=d.sha;
+
+  // Find PRELOADED_DATA photo array and add new photos
+  var photoEntry=newPhotos.map(function(p){
+    return JSON.stringify({title:p.title,desc:'',imgUrl:p.url,emoji:'\uD83D\uDDBC\uFE0F',imgData:''});
+  }).join(',');
+
+  // Replace the photo array in PRELOADED_DATA
+  var updated;
+  if(html.indexOf('"photo":[]')>=0){
+    updated=html.replace('"photo":[]','"photo":['+photoEntry+']');
+  } else {
+    // Find existing photo array and append
+    var m=html.match(/"photo":\[([\s\S]*?)\]/);
+    if(m){
+      var existing=m[1].trim();
+      var newArr=existing ? existing+','+photoEntry : photoEntry;
+      updated=html.replace(m[0],'"photo":['+newArr+']');
+    } else {
+      log('Impossible de trouver la section photo dans index.html','err');
+      return false;
+    }
+  }
+
+  // Commit updated index.html
+  var b64=btoa(unescape(encodeURIComponent(updated)));
+  var commitR=await fetch('https://api.github.com/repos/'+REPO+'/contents/index.html',{
+    method:'PUT',
+    headers:{'Authorization':'token '+TK,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
+    body:JSON.stringify({message:'Add '+newPhotos.length+' photos to portfolio',content:b64,sha:sha})
+  });
+  var cd=await commitR.json();
+  if(commitR.ok){log('Portfolio mis à jour avec '+newPhotos.length+' photos !','ok');return true;}
+  else{log('Erreur mise à jour: '+(cd.message||'?'),'err');return false;}
+}
+
 document.getElementById('fi').onchange=async function(e){
-  if(!TK){log('ERROR: Token not set','#f85149');return;}
-  var files=Array.from(e.target.files).filter(function(f){return f.name.endsWith('.mp4');});
-  log('Found '+files.length+' mp4 files to process','#79c0ff');
-  var done=0,skip=0,err=0;
+  if(!TK){log('ERREUR: Token manquant. Recharge la page.','err');return;}
+  var files=Array.from(e.target.files).filter(function(f){
+    return /\.(jpg|jpeg|png|webp)$/i.test(f.name);
+  });
+  if(!files.length){log('Aucune photo trouvée','err');return;}
+  log('Trouvé '+files.length+' photos à uploader','info');
+  
+  var uploaded=[];
   for(var i=0;i<files.length;i++){
     var file=files[i];
-    var path='videos/'+file.name;
-    prog('['+(i+1)+'/'+files.length+'] Checking '+file.name+'...');
-    var chk=await fetch('https://api.github.com/repos/'+REPO+'/contents/'+path,{headers:{'Authorization':'token '+TK,'Accept':'application/vnd.github.v3+json'}});
-    if(chk.ok){log('SKIP: '+file.name+' (already on GitHub)','#6e7681');skip++;continue;}
-    prog('['+(i+1)+'/'+files.length+'] Encoding '+file.name+' ('+Math.round(file.size/1024/1024)+'MB)...');
-    var b64;
-    try{b64=await toB64(file);}catch(ex){log('ERR encoding '+file.name+': '+ex.message,'#f85149');err++;continue;}
-    prog('['+(i+1)+'/'+files.length+'] Uploading '+file.name+'...');
-    try{
-      var r=await fetch('https://api.github.com/repos/'+REPO+'/contents/'+path,{
-        method:'PUT',
-        headers:{'Authorization':'token '+TK,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
-        body:JSON.stringify({message:'Add video '+file.name,content:b64})
-      });
-      var d=await r.json().catch(function(){return{};});
-      if(r.ok){log('OK: '+file.name,'#56d364');done++;}
-      else{log('ERR '+r.status+': '+file.name+' - '+(d.message||'?'),'#f85149');err++;}
-    }catch(ex){log('ERR '+file.name+': '+ex.message,'#f85149');err++;}
+    var pct=Math.round((i/files.length)*85);
+    setBar(pct);
+    status('['+(i+1)+'/'+files.length+'] '+file.name);
+    log('Compression de '+file.name+' ('+Math.round(file.size/1024)+'KB)...');
+    
+    var compressed=await compressImage(file,1400,0.82);
+    var b64=await toB64(compressed);
+    
+    var id=genId();
+    var path='images/'+id+'.jpg';
+    log('Upload: '+path+'...');
+    
+    var ur=await uploadFile(path,b64,'Add photo '+id);
+    if(ur.ok){
+      var title='Photo '+(i+1);
+      uploaded.push({id:id,url:BASE+'/'+path,title:title,origName:file.name});
+      log('OK: '+file.name+' → /images/'+id+'.jpg','ok');
+    } else {
+      var ud=await ur.json().catch(function(){return{};});
+      log('ERR: '+file.name+' - '+(ud.message||ur.status),'err');
+    }
   }
-  prog('DONE: '+done+' uploaded, '+skip+' skipped, '+err+' errors');
+  
+  setBar(90);
+  status('Mise à jour du portfolio...');
+  
+  if(uploaded.length>0){
+    var ok=await updatePortfolio(uploaded);
+    if(ok){
+      setBar(100);
+      status('✅ TERMINÉ: '+uploaded.length+' photos ajoutées au portfolio !');
+      log('Toutes les photos sont visibles sur https://doudoushco.github.io','ok');
+      log('Attends 2-3 minutes pour que GitHub Pages se mette à jour puis recharge la page.','info');
+    }
+  } else {
+    status('Aucune photo uploadée avec succès.');
+  }
 };
 </script>
 </body>
