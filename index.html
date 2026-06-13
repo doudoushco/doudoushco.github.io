@@ -2050,6 +2050,7 @@ closeModal = function() {
           .catch(function(){ alert('Erreur lors de la publication.'); });
       };
       wrap.appendChild(editBtn);
+      grid.appendChild(wrap);
     }
   }
   if(document.readyState==='complete'){ setTimeout(fixVideoSection,400); }
