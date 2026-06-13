@@ -2005,16 +2005,52 @@ closeModal = function() {
     var grid = document.getElementById('video-grid');
     if(!grid) return;
     grid.style.display = 'block';
-    grid.innerHTML = '<div style="max-width:600px;margin:0 auto 10px;padding:0 4px;">' +
-      '<a href="https://drive.google.com/drive/home" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#fff8f0,#fff2f4);border:1.5px solid rgba(255,107,107,0.35);border-radius:16px;padding:16px 18px;text-decoration:none;color:#1a1a1a;font-family:Inter,sans-serif;">' +
-        '<div style="width:40px;height:40px;flex-shrink:0;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.06);font-size:20px;">' + String.fromCodePoint(128193) + '</div>' +
-        '<div style="flex:1;">' +
-          '<div style="font-weight:700;font-size:0.95rem;margin-bottom:2px;">Voir toutes mes videos</div>' +
-          '<div style="font-size:0.78rem;color:#888;">Accéder au dossier Google Drive</div>' +
-        '</div>' +
-        '<div style="color:rgb(224,80,80);font-size:1.2rem;">' + String.fromCodePoint(8599) + '</div>' +
-      '</a>' +
-    '</div>';
+    var defaultLink = 'https://drive.google.com/drive/home';
+    fetch('drive-link.json?t=' + Date.now()).then(function(r){return r.ok ? r.json() : {url: defaultLink};}).catch(function(){return {url: defaultLink};}).then(function(data){
+      var url = (data && data.url) || defaultLink;
+      render(url);
+    });
+    function render(url){
+      grid.innerHTML = '';
+      var wrap = document.createElement('div');
+      wrap.style.cssText = 'max-width:600px;margin:0 auto 10px;padding:0 4px;display:flex;align-items:center;gap:10px;';
+      var a = document.createElement('a');
+      a.href = url; a.target='_blank'; a.rel='noopener';
+      a.style.cssText = 'display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#fff8f0,#fff2f4);border:1.5px solid rgba(255,107,107,0.35);border-radius:16px;padding:16px 18px;text-decoration:none;color:#1a1a1a;font-family:Inter,sans-serif;flex:1;';
+      a.innerHTML = '<div style="width:40px;height:40px;flex-shrink:0;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.06);font-size:20px;">' + String.fromCodePoint(128193) + '</div>' +
+        '<div style="flex:1;"><div style="font-weight:700;font-size:0.95rem;">Voir toutes mes videos</div></div>' +
+        '<div style="color:rgb(224,80,80);font-size:1.2rem;">' + String.fromCodePoint(8599) + '</div>';
+      wrap.appendChild(a);
+      var editBtn = document.createElement('button');
+      editBtn.textContent = String.fromCodePoint(9999, 65039);
+      editBtn.title = 'Modifier le lien Drive';
+      editBtn.style.cssText = 'width:40px;height:40px;border-radius:12px;border:1.5px solid rgba(255,107,107,0.35);background:#fff;cursor:pointer;font-size:18px;flex-shrink:0;';
+      editBtn.onclick = function(e){
+        e.preventDefault();
+        var nv = prompt('Colle le nouveau lien Google Drive :', url);
+        if(!nv) return;
+        var token = localStorage.getItem('gh_deploy_token');
+        if(!token){ alert('Token manquant, modification non publiee.'); a.href = nv; url = nv; return; }
+        var repo = 'doudoushco/doudoushco.github.io';
+        fetch('https://api.github.com/repos/'+repo+'/contents/drive-link.json', {headers:{'Authorization':'token '+token,'Accept':'application/vnd.github+json'}})
+          .then(function(r){ return r.ok ? r.json() : {sha:null}; })
+          .then(function(j){
+            var content = btoa(unescape(encodeURIComponent(JSON.stringify({url: nv}))));
+            return fetch('https://api.github.com/repos/'+repo+'/contents/drive-link.json', {
+              method:'PUT',
+              headers:{'Authorization':'token '+token,'Accept':'application/vnd.github+json','Content-Type':'application/json'},
+              body: JSON.stringify({message:'Mise a jour lien Drive', content: content, sha: j.sha})
+            });
+          })
+          .then(function(r){ return r.json(); })
+          .then(function(){
+            a.href = nv; url = nv;
+            alert('Lien Drive mis a jour !');
+          })
+          .catch(function(){ alert('Erreur lors de la publication.'); });
+      };
+      wrap.appendChild(editBtn);
+    }
   }
   if(document.readyState==='complete'){ setTimeout(fixVideoSection,400); }
   else { window.addEventListener('load', function(){ setTimeout(fixVideoSection,400); }); }
