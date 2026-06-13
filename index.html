@@ -2026,8 +2026,10 @@ closeModal = function() {
       editBtn.textContent = String.fromCodePoint(9999, 65039);
       editBtn.title = 'Modifier le lien Drive';
       editBtn.style.cssText = 'width:40px;height:40px;border-radius:12px;border:1.5px solid rgba(255,107,107,0.35);background:#fff;cursor:pointer;font-size:18px;flex-shrink:0;';
+      editBtn.type = 'button';
       editBtn.onclick = function(e){
         e.preventDefault();
+        e.stopPropagation();
         var nv = prompt('Colle le nouveau lien Google Drive :', url);
         if(!nv) return;
         var token = localStorage.getItem('gh_deploy_token');
