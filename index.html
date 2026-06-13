@@ -2021,6 +2021,7 @@ closeModal = function() {
         '<div style="flex:1;"><div style="font-weight:700;font-size:0.95rem;">Voir toutes mes videos</div></div>' +
         '<div style="color:rgb(224,80,80);font-size:1.2rem;">' + String.fromCodePoint(8599) + '</div>';
       wrap.appendChild(a);
+      if(localStorage.getItem('gh_deploy_token')){
       var editBtn = document.createElement('button');
       editBtn.textContent = String.fromCodePoint(9999, 65039);
       editBtn.title = 'Modifier le lien Drive';
@@ -2050,6 +2051,7 @@ closeModal = function() {
           .catch(function(){ alert('Erreur lors de la publication.'); });
       };
       wrap.appendChild(editBtn);
+      }
       grid.appendChild(wrap);
     }
   }
