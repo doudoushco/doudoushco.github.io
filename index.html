@@ -2013,27 +2013,41 @@ closeModal = function() {
     function render(url){
       grid.innerHTML = '';
       var wrap = document.createElement('div');
-      wrap.style.cssText = 'max-width:600px;margin:0 auto 10px;padding:0 4px;display:flex;align-items:center;gap:10px;';
-      var a = document.createElement('a');
-      a.href = url; a.target='_blank'; a.rel='noopener';
-      a.style.cssText = 'display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#fff8f0,#fff2f4);border:1.5px solid rgba(255,107,107,0.35);border-radius:16px;padding:16px 18px;text-decoration:none;color:#1a1a1a;font-family:Inter,sans-serif;flex:1;';
-      a.innerHTML = '<div style="width:40px;height:40px;flex-shrink:0;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.06);font-size:20px;">' + String.fromCodePoint(128193) + '</div>' +
-        '<div style="flex:1;"><div style="font-weight:700;font-size:0.95rem;">Voir toutes mes videos</div></div>' +
-        '<div style="color:rgb(224,80,80);font-size:1.2rem;">' + String.fromCodePoint(8599) + '</div>';
-      wrap.appendChild(a);
+      wrap.style.cssText = 'max-width:600px;margin:0 auto 10px;padding:0 4px;';
+
+      var title = document.createElement('div');
+      title.textContent = 'Voir toutes mes videos';
+      title.style.cssText = 'font-weight:700;font-size:1rem;margin-bottom:10px;font-family:Inter,sans-serif;color:#1a1a1a;';
+      wrap.appendChild(title);
+
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:10px;';
+
+      var linkBar = document.createElement('a');
+      linkBar.href = url; linkBar.target = '_blank'; linkBar.rel = 'noopener';
+      linkBar.style.cssText = 'flex:1;display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid rgba(255,107,107,0.35);border-radius:50px;padding:14px 20px;text-decoration:none;color:#888;font-family:Inter,sans-serif;font-size:0.85rem;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;';
+      linkBar.innerHTML = '<span style="font-size:1.1rem;flex-shrink:0;">' + String.fromCodePoint(128193) + '</span><span style="overflow:hidden;text-overflow:ellipsis;">' + url + '</span>';
+      row.appendChild(linkBar);
+
+      var okBtn = document.createElement('a');
+      okBtn.href = url; okBtn.target = '_blank'; okBtn.rel = 'noopener';
+      okBtn.textContent = 'OK';
+      okBtn.style.cssText = 'background:rgb(255,107,107);color:#fff;border:none;border-radius:50px;padding:14px 28px;font-weight:700;font-size:0.85rem;text-decoration:none;font-family:Inter,sans-serif;flex-shrink:0;cursor:pointer;';
+      row.appendChild(okBtn);
+
       if(localStorage.getItem('gh_deploy_token')){
       var editBtn = document.createElement('button');
+      editBtn.type = 'button';
       editBtn.textContent = String.fromCodePoint(9999, 65039);
       editBtn.title = 'Modifier le lien Drive';
-      editBtn.style.cssText = 'width:40px;height:40px;border-radius:12px;border:1.5px solid rgba(255,107,107,0.35);background:#fff;cursor:pointer;font-size:18px;flex-shrink:0;';
-      editBtn.type = 'button';
+      editBtn.style.cssText = 'width:46px;height:46px;border-radius:50%;border:1.5px solid rgba(255,107,107,0.35);background:#fff;cursor:pointer;font-size:18px;flex-shrink:0;';
       editBtn.onclick = function(e){
         e.preventDefault();
         e.stopPropagation();
         var nv = prompt('Colle le nouveau lien Google Drive :', url);
         if(!nv) return;
         var token = localStorage.getItem('gh_deploy_token');
-        if(!token){ alert('Token manquant, modification non publiee.'); a.href = nv; url = nv; return; }
+        if(!token){ alert('Token manquant, modification non publiee.'); return; }
         var repo = 'doudoushco/doudoushco.github.io';
         fetch('https://api.github.com/repos/'+repo+'/contents/drive-link.json', {headers:{'Authorization':'token '+token,'Accept':'application/vnd.github+json'}})
           .then(function(r){ return r.ok ? r.json() : {sha:null}; })
@@ -2047,13 +2061,15 @@ closeModal = function() {
           })
           .then(function(r){ return r.json(); })
           .then(function(){
-            a.href = nv; url = nv;
-            alert('Lien Drive mis a jour !');
+            alert('Lien Drive mis a jour ! La page va se recharger.');
+            location.reload();
           })
           .catch(function(){ alert('Erreur lors de la publication.'); });
       };
-      wrap.appendChild(editBtn);
+      row.appendChild(editBtn);
       }
+
+      wrap.appendChild(row);
       grid.appendChild(wrap);
     }
   }
