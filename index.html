@@ -2038,9 +2038,9 @@ closeModal = function() {
       if(localStorage.getItem('gh_deploy_token')){
       var editBtn = document.createElement('button');
       editBtn.type = 'button';
-      editBtn.textContent = String.fromCodePoint(9999, 65039);
+      editBtn.textContent = 'Modifier';
       editBtn.title = 'Modifier le lien Drive';
-      editBtn.style.cssText = 'width:46px;height:46px;border-radius:50%;border:1.5px solid rgba(255,107,107,0.35);background:#fff;cursor:pointer;font-size:18px;flex-shrink:0;';
+      editBtn.style.cssText = 'background:#fff;color:rgb(255,107,107);border:1.5px solid rgba(255,107,107,0.6);border-radius:50px;padding:14px 24px;font-weight:700;font-size:0.85rem;font-family:Inter,sans-serif;cursor:pointer;flex-shrink:0;';
       editBtn.onclick = function(e){
         e.preventDefault();
         e.stopPropagation();
