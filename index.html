@@ -1125,7 +1125,7 @@
     grid.innerHTML = items.map(a => `
       <div class="article-card">
         <div class="article-card-top-line"></div>
-        ${a.category ? `<span class="article-category-badge">${esc(a.category)}</span>` : ''}
+        ${a.category ? `<span class="article-category-badge">${esc(a.category)}</span>` : ''}${a.link ? `<a href="${esc(a.link)}" target="_blank" rel="noopener" class="article-source-link" style="display:inline-flex;align-items:center;gap:4px;font-size:0.72rem;color:rgb(255,107,107);text-decoration:none;font-weight:700;margin-left:8px;vertical-align:middle;">📰 Article original →</a>` : ''}
         <h3>${esc(a.title)}</h3>
         ${a.text ? `<p class="article-text">${esc(a.text).substring(0,200)}${a.text.length > 200 ? '...' : ''}</p>` : ''}
         <div class="article-meta">
