@@ -159,7 +159,7 @@
 
     .pill:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
 
-    .pill-coral   { background: rgba(255,107,107,0.1); color: #e05050; border-color: rgba(255,107,107,0.3); }
+    .pill-coral   { background: rgba(255,107,107,0.1); color: #e05050; border-color: rgba(44,120,115,0.3); }
     .pill-yellow  { background: rgba(255,209,102,0.15); color: #b58900; border-color: rgba(255,209,102,0.4); }
     .pill-teal    { background: rgba(6,196,154,0.1); color: #059e7d; border-color: rgba(6,196,154,0.3); }
 
@@ -209,7 +209,7 @@
       display: inline-block;
     }
 
-    .badge-coral   { background: rgba(255,107,107,0.12); color: #e05050; }
+    .badge-coral   { background: rgba(44,120,115,0.12); color: #e05050; }
     .badge-yellow  { background: rgba(255,209,102,0.2); color: #b58900; }
     .badge-teal    { background: rgba(6,196,154,0.12); color: #059e7d; }
 
@@ -880,13 +880,13 @@
 
 <!-- ── À PROPOS / CV ──────────────────────────────────────────────── -->
 <section id="apropos" style="padding:60px 24px;text-align:center;">
-  <div style="display:inline-flex;align-items:center;gap:6px;background:#fff0ee;color:rgb(255,107,107);font-size:0.7rem;font-weight:700;letter-spacing:1px;padding:6px 16px;border-radius:20px;text-transform:uppercase;margin-bottom:20px;">👋 À propos</div>
+  <div style="display:inline-flex;align-items:center;gap:6px;background:#e0f2f0;color:#2C7873;font-size:0.7rem;font-weight:700;letter-spacing:1px;padding:6px 16px;border-radius:20px;text-transform:uppercase;margin-bottom:20px;">👋 À propos</div>
   <h2 style="font-family:'Playfair Display','Georgia',serif;font-style:italic;font-weight:700;font-size:2.4rem;margin-bottom:30px;color:#1a1a1a;">Curriculum Vitae</h2>
-  <div style="max-width:340px;margin:0 auto;background:#fff;border:1.5px solid rgba(255,107,107,0.25);border-radius:20px;padding:24px;box-shadow:0 8px 24px rgba(0,0,0,0.04);">
+  <div style="max-width:340px;margin:0 auto;background:#fff;border:1.5px solid rgba(44,120,115,0.25);border-radius:20px;padding:24px;box-shadow:0 8px 24px rgba(0,0,0,0.04);">
     <div style="border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.12);margin-bottom:18px;"><img src="cv-preview.jpg" style="display:block;width:100%;height:auto;" alt="Aperçu du CV"></div>
     <div style="font-weight:700;font-size:1rem;margin-bottom:6px;color:#1a1a1a;">CV.pdf</div>
     <div style="font-size:0.8rem;color:#888;margin-bottom:24px;">Mon parcours, mes compétences et mes expériences</div>
-    <a href="CV.pdf" download="CV.pdf" target="_blank" style="background:rgb(255,107,107);color:#fff;border:none;border-radius:50px;padding:16px 32px;font-weight:700;font-size:0.9rem;text-decoration:none;display:inline-flex;align-items:center;gap:10px;cursor:pointer;box-shadow:0 8px 20px rgba(255,107,107,0.25);">⬇️ Télécharger</a>
+    <a href="CV.pdf" download="CV.pdf" target="_blank" style="background:#2C7873;color:#fff;border:none;border-radius:50px;padding:16px 32px;font-weight:700;font-size:0.9rem;text-decoration:none;display:inline-flex;align-items:center;gap:10px;cursor:pointer;box-shadow:0 8px 20px rgba(44,120,115,0.25);">⬇️ Télécharger</a>
   </div>
 </section>
 
@@ -1137,7 +1137,7 @@
     grid.innerHTML = items.map(a => `
       <div class="article-card">
         <div class="article-card-top-line"></div>
-        ${a.category ? `<span class="article-category-badge">${esc(a.category)}</span>` : ''}${a.link ? `<a href="${esc(a.link)}" target="_blank" rel="noopener" class="article-source-link" style="display:inline-flex;align-items:center;gap:4px;font-size:0.72rem;color:rgb(255,107,107);text-decoration:none;font-weight:700;margin-left:8px;vertical-align:middle;">📰 Article original →</a>` : ''}
+        ${a.category ? `<span class="article-category-badge">${esc(a.category)}</span>` : ''}${a.link ? `<a href="${esc(a.link)}" target="_blank" rel="noopener" class="article-source-link" style="display:inline-flex;align-items:center;gap:4px;font-size:0.72rem;color:#2C7873;text-decoration:none;font-weight:700;margin-left:8px;vertical-align:middle;">📰 Article original →</a>` : ''}
         <h3>${esc(a.title)}</h3>
         ${a.text ? `<p class="article-text">${esc(a.text).substring(0,200)}${a.text.length > 200 ? '...' : ''}</p>` : ''}
         <div class="article-meta">
@@ -2037,14 +2037,14 @@ closeModal = function() {
 
       var linkBar = document.createElement('a');
       linkBar.href = url; linkBar.target = '_blank'; linkBar.rel = 'noopener';
-      linkBar.style.cssText = 'flex:1;display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid rgba(255,107,107,0.35);border-radius:50px;padding:14px 20px;text-decoration:none;color:#888;font-family:Inter,sans-serif;font-size:0.85rem;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;';
+      linkBar.style.cssText = 'flex:1;display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid rgba(44,120,115,0.35);border-radius:50px;padding:14px 20px;text-decoration:none;color:#888;font-family:Inter,sans-serif;font-size:0.85rem;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;';
       linkBar.innerHTML = '<span style="font-size:1.1rem;flex-shrink:0;">' + String.fromCodePoint(128193) + '</span><span style="overflow:hidden;text-overflow:ellipsis;">' + url + '</span>';
       row.appendChild(linkBar);
 
       var okBtn = document.createElement('a');
       okBtn.href = url; okBtn.target = '_blank'; okBtn.rel = 'noopener';
       okBtn.textContent = 'OK';
-      okBtn.style.cssText = 'background:rgb(255,107,107);color:#fff;border:none;border-radius:50px;padding:14px 28px;font-weight:700;font-size:0.85rem;text-decoration:none;font-family:Inter,sans-serif;flex-shrink:0;cursor:pointer;';
+      okBtn.style.cssText = 'background:#2C7873;color:#fff;border:none;border-radius:50px;padding:14px 28px;font-weight:700;font-size:0.85rem;text-decoration:none;font-family:Inter,sans-serif;flex-shrink:0;cursor:pointer;';
       row.appendChild(okBtn);
 
       if(localStorage.getItem('gh_deploy_token')){
@@ -2052,7 +2052,7 @@ closeModal = function() {
       editBtn.type = 'button';
       editBtn.textContent = 'Modifier';
       editBtn.title = 'Modifier le lien Drive';
-      editBtn.style.cssText = 'background:#fff;color:rgb(255,107,107);border:1.5px solid rgba(255,107,107,0.6);border-radius:50px;padding:14px 24px;font-weight:700;font-size:0.85rem;font-family:Inter,sans-serif;cursor:pointer;flex-shrink:0;';
+      editBtn.style.cssText = 'background:#fff;color:#2C7873;border:1.5px solid rgba(255,107,107,0.6);border-radius:50px;padding:14px 24px;font-weight:700;font-size:0.85rem;font-family:Inter,sans-serif;cursor:pointer;flex-shrink:0;';
       editBtn.onclick = function(e){
         e.preventDefault();
         e.stopPropagation();
