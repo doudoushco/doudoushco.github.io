@@ -60,6 +60,15 @@
 
     .nav-logo .dot { color: var(--coral); }
 
+    .nav-links {
+      display: flex; align-items: center; gap: 1.5rem;
+    }
+    .nav-links a {
+      font-size: 0.82rem; color: #555;
+      text-decoration: none; font-weight: 500; opacity: 0.8;
+      transition: opacity 0.2s;
+    }
+    .nav-links a:hover { opacity: 1; color: #2C7873; }
     .nav-contact {
       background: var(--coral);
       color: #fff;
@@ -797,6 +806,13 @@
 <!-- ── NAVBAR ──────────────────────────────────────────────────── -->
 <nav>
   <a href="#hero" class="nav-logo">Doudoush<span class="dot">.</span></a>
+  <div class="nav-links">
+    <a href="#video">Vidéo</a>
+    <a href="#galerie">Photo</a>
+    <a href="#articles">Articles</a>
+    <a href="#services">Services</a>
+    <a href="#apropos">À propos</a>
+  </div>
   <a href="#contact" class="nav-contact">Contact</a>
 </nav>
 
@@ -895,7 +911,12 @@
 <!-- ── À PROPOS / CV ──────────────────────────────────────────────── -->
 <section id="apropos" style="padding:60px 24px;text-align:center;">
   <div style="display:inline-flex;align-items:center;gap:6px;background:#e0f2f0;color:#2C7873;font-size:0.7rem;font-weight:700;letter-spacing:1px;padding:6px 16px;border-radius:20px;text-transform:uppercase;margin-bottom:20px;">👋 À propos</div>
-  <h2 style="font-family:'Playfair Display','Georgia',serif;font-style:italic;font-weight:700;font-size:2.4rem;margin-bottom:30px;color:#1a1a1a;">Curriculum Vitae</h2>
+  <h2 style="font-family:'Playfair Display','Georgia',serif;font-style:italic;font-weight:700;font-size:2.4rem;margin-bottom:24px;color:#1a1a1a;">Qui suis-je ?</h2>
+  <div style="max-width:600px;margin:0 auto 40px;text-align:left;background:rgba(44,120,115,0.06);border-left:4px solid #2C7873;border-radius:0 12px 12px 0;padding:20px 24px;">
+    <p style="font-size:1.05rem;line-height:1.8;color:#222;font-style:italic;margin:0;">"Trois disciplines, une seule obsession : capturer ce qui mérite d'être vu. Du montage vidéo à la photographie en passant par la rédaction culturelle, j'accompagne les projets qui ont quelque chose à dire — avec du style et sans prise de tête."</p>
+    <p style="margin:12px 0 0;font-size:0.85rem;font-weight:700;color:#2C7873;">— Khouloud, Doudoush</p>
+  </div>
+  <p style="font-size:1rem;font-weight:700;color:#2C7873;letter-spacing:1px;text-transform:uppercase;margin-bottom:16px;">Curriculum Vitae</p>
   <div style="max-width:340px;margin:0 auto;background:#fff;border:1.5px solid rgba(44,120,115,0.25);border-radius:20px;padding:24px;box-shadow:0 8px 24px rgba(0,0,0,0.04);">
     <div style="border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.12);margin-bottom:18px;"><img src="cv-preview.jpg" style="display:block;width:100%;height:auto;" alt="Aperçu du CV"></div>
     <div style="font-weight:700;font-size:1rem;margin-bottom:6px;color:#1a1a1a;">CV.pdf</div>
@@ -905,6 +926,48 @@
 </section>
 
 <!-- ── CONTACT ──────────────────────────────────────────────────── -->
+<section id="services" style="padding:60px 24px;text-align:center;background:#f8fdfc;">
+  <div style="display:inline-flex;align-items:center;gap:6px;background:#e0f2f0;color:#2C7873;font-size:0.7rem;font-weight:700;letter-spacing:1px;padding:6px 16px;border-radius:20px;text-transform:uppercase;margin-bottom:14px;">🛠 Mes services</div>
+  <h2 style="font-family:'Playfair Display','Georgia',serif;font-style:italic;font-weight:700;font-size:2.4rem;margin-bottom:10px;color:#1a1a1a;">Ce que je peux faire pour toi</h2>
+  <p style="color:#666;font-size:1rem;margin-bottom:40px;">Trois expertises, un seul objectif : valoriser ton projet.</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;max-width:860px;margin:0 auto;">
+    <div style="background:#fff;border:1px solid rgba(44,120,115,0.15);border-radius:16px;padding:28px 24px;text-align:left;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:0;left:0;right:0;height:4px;background:#2C7873;border-radius:16px 16px 0 0;"></div>
+      <div style="width:44px;height:44px;background:#e0f2f0;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:1.3rem;">🎬</div>
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:8px;color:#1a1a1a;">Montage vidéo</h3>
+      <p style="font-size:0.87rem;color:#555;line-height:1.65;margin-bottom:14px;">Du rushes au rendu final — montage dynamique, colorisation et habillage sonore pour donner vie à ta vision.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        <span style="font-size:0.75rem;color:#1a5e59;background:#e0f2f0;padding:3px 10px;border-radius:20px;">Reels</span>
+        <span style="font-size:0.75rem;color:#1a5e59;background:#e0f2f0;padding:3px 10px;border-radius:20px;">Courts-métrages</span>
+        <span style="font-size:0.75rem;color:#1a5e59;background:#e0f2f0;padding:3px 10px;border-radius:20px;">Vlogs</span>
+        <span style="font-size:0.75rem;color:#1a5e59;background:#e0f2f0;padding:3px 10px;border-radius:20px;">Clips</span>
+      </div>
+    </div>
+    <div style="background:#fff;border:1px solid rgba(44,120,115,0.15);border-radius:16px;padding:28px 24px;text-align:left;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:0;left:0;right:0;height:4px;background:#2C7873;border-radius:16px 16px 0 0;"></div>
+      <div style="width:44px;height:44px;background:#e0f2f0;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:1.3rem;">📷</div>
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:8px;color:#1a1a1a;">Photographie</h3>
+      <p style="font-size:0.87rem;color:#555;line-height:1.65;margin-bottom:14px;">Des images qui racontent — événements, lieux et ambiances capturés avec soin et sensibilité.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        <span style="font-size:0.75rem;color:#1a5e59;background:#e0f2f0;padding:3px 10px;border-radius:20px;">Événements</span>
+        <span style="font-size:0.75rem;color:#1a5e59;background:#e0f2f0;padding:3px 10px;border-radius:20px;">Lifestyle</span>
+        <span style="font-size:0.75rem;color:#1a5e59;background:#e0f2f0;padding:3px 10px;border-radius:20px;">Reportage</span>
+      </div>
+    </div>
+    <div style="background:#fff;border:1px solid rgba(44,120,115,0.15);border-radius:16px;padding:28px 24px;text-align:left;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:0;left:0;right:0;height:4px;background:#2C7873;border-radius:16px 16px 0 0;"></div>
+      <div style="width:44px;height:44px;background:#e0f2f0;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:1.3rem;">✍️</div>
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:8px;color:#1a1a1a;">Rédaction culturelle</h3>
+      <p style="font-size:0.87rem;color:#555;line-height:1.65;margin-bottom:14px;">Critiques et articles sur le cinéma, les séries et la culture — écrits avec passion et expertise.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        <span style="font-size:0.75rem;color:#1a5e59;background:#e0f2f0;padding:3px 10px;border-radius:20px;">Critiques</span>
+        <span style="font-size:0.75rem;color:#1a5e59;background:#e0f2f0;padding:3px 10px;border-radius:20px;">Cinéma</span>
+        <span style="font-size:0.75rem;color:#1a5e59;background:#e0f2f0;padding:3px 10px;border-radius:20px;">Séries</span>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="contact">
   <p class="contact-eyebrow">📬 Contact</p>
   <h2>Travaillons ensemble</h2>
