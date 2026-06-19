@@ -522,14 +522,28 @@
 
     .meta-dot { width: 3px; height: 3px; background: var(--teal); border-radius: 50%; }
 
+    .card-links { margin-top: 1rem; }
     .read-more {
-      display: inline-flex; align-items: center; gap: 0.35rem;
-      color: var(--teal); font-size: 0.83rem; font-weight: 600;
-      text-decoration: none; margin-top: 1rem;
-      transition: gap 0.25s;
+      display: block; width: 100%; text-align: center;
+      background: #2C7873; color: #fff;
+      border-radius: 8px; padding: 9px 12px;
+      font-weight: 700; font-size: 0.88rem;
+      text-decoration: none;
+      transition: background 0.2s;
+      box-sizing: border-box;
     }
-
-    .read-more:hover { gap: 0.6rem; }
+    .read-more:hover { background: #235f5b; }
+    .btn-article-original {
+      display: block; width: 100%; text-align: center;
+      background: #e0f2f0; color: #1a5e59;
+      border-radius: 8px; padding: 7px 12px;
+      font-weight: 600; font-size: 0.83rem;
+      text-decoration: none; margin-top: 6px;
+      border: 1px solid rgba(44,120,115,0.2);
+      transition: background 0.2s;
+      box-sizing: border-box;
+    }
+    .btn-article-original:hover { background: #c5e8e5; }
 
     /* ── CONTACT ────────────────────────────────────────────────── */
     #contact {
@@ -1137,14 +1151,14 @@
     grid.innerHTML = items.map(a => `
       <div class="article-card">
         <div class="article-card-top-line"></div>
-        ${a.category ? `<span class="article-category-badge">${esc(a.category)}</span>` : ''}${a.link ? `<a href="${esc(a.link)}" target="_blank" rel="noopener" class="article-source-link" style="display:inline-flex;align-items:center;gap:4px;font-size:0.72rem;color:#2C7873;text-decoration:none;font-weight:700;margin-left:8px;vertical-align:middle;">📰 Article original →</a>` : ''}
+        ${a.category ? `<span class="article-category-badge">${esc(a.category)}</span>` : ''}
         <h3>${esc(a.title)}</h3>
         ${a.text ? `<p class="article-text">${esc(a.text).substring(0,200)}${a.text.length > 200 ? '...' : ''}</p>` : ''}
         <div class="article-meta">
           ${a.date ? `<span>${esc(a.date)}</span>` : ''}
           ${a.readTime ? `<span class="meta-dot"></span><span>${esc(a.readTime)} min de lecture</span>` : ''}
         </div>
-        ${a.link ? `<a href="${esc(a.link)}" target="_blank" rel="noopener" class="read-more">Lire l'article →</a>` : ''}
+        ${a.link ? `<div class="card-links"><a href="${esc(a.link)}" target="_blank" rel="noopener" class="read-more">Lire l’article →</a><a href="${esc(a.link)}" target="_blank" rel="noopener" class="btn-article-original">📰 Article original →</a></div>` : ''}
         <div class="card-actions">
           <button class="btn-delete" onclick="deleteItem('article','${a.id}')">🗑 Supprimer</button>
         </div>
