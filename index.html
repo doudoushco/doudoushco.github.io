@@ -1187,9 +1187,9 @@
       <div class="photo-card">
         <div class="photo-frame">
           ${p.imgData
-            ? `<img src="${p.imgData}" alt="${esc(p.title)}" loading="lazy"/>`
+            ? `<img src="${p.imgData}" alt="${esc(p.title)}" loading="eager"/>`
             : p.imgUrl
-              ? `<img src="${esc(p.imgUrl)}" alt="${esc(p.title)}" loading="lazy"/>`
+              ? `<img src="${esc(p.imgUrl)}" alt="${esc(p.title)}" loading="eager"/>`
               : `<span class="photo-emoji">${p.emoji || '🖼️'}</span>`}
         </div>
         <div class="photo-info">
