@@ -922,6 +922,8 @@
     <div style="font-weight:700;font-size:1rem;margin-bottom:6px;color:#1a1a1a;">CV.pdf</div>
     <div style="font-size:0.8rem;color:#888;margin-bottom:24px;">Mon parcours, mes compétences et mes expériences</div>
     <a href="CV.pdf" download="CV.pdf" target="_blank" style="background:#2C7873;color:#fff;border:none;border-radius:50px;padding:16px 32px;font-weight:700;font-size:0.9rem;text-decoration:none;display:inline-flex;align-items:center;gap:10px;cursor:pointer;box-shadow:0 8px 20px rgba(44,120,115,0.25);">⬇️ Télécharger</a>
+    <input id="f-cv-file" type="file" accept="application/pdf" style="display:none" onchange="updateCV(this)">
+    <button type="button" class="btn-add" style="margin-top:14px;width:100%;justify-content:center;" onclick="document.getElementById('f-cv-file').click()">📄 Mettre à jour le CV</button>
   </div>
 </section>
 
@@ -1071,6 +1073,43 @@
 
   function save(key, data) {
     localStorage.setItem(KEYS[key], JSON.stringify(data));
+  }
+
+  /* ─── Mise à jour du CV (upload direct vers GitHub) ─────────── */
+  function updateCV(input) {
+    var file = input.files && input.files[0];
+    if (!file) return;
+    var token = localStorage.getItem('gh_deploy_token') || '';
+    if (!token) { token = prompt('Entre ton token GitHub (ghp_...) pour publier :'); if (token) localStorage.setItem('gh_deploy_token', token); }
+    if (!token) { alert('Token manquant, CV non publié.'); return; }
+    var btn = input.parentElement.querySelector('.btn-add');
+    if (btn) { btn.textContent = 'Envoi en cours...'; btn.disabled = true; }
+    var reader = new FileReader();
+    reader.onload = async function () {
+      try {
+        var b64content = reader.result.split(',')[1];
+        var repo = 'doudoushco/doudoushco.github.io';
+        var getRes = await fetch('https://api.github.com/repos/' + repo + '/contents/CV.pdf', {
+          headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' }
+        });
+        var getData = await getRes.json();
+        if (!getData.sha) throw new Error('Impossible de récupérer le CV actuel (' + (getData.message || 'erreur') + ')');
+        var putRes = await fetch('https://api.github.com/repos/' + repo + '/contents/CV.pdf', {
+          method: 'PUT',
+          headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: 'Mise à jour du CV', content: b64content, sha: getData.sha })
+        });
+        var putData = await putRes.json();
+        if (!putRes.ok) throw new Error(putData.message || 'Erreur upload CV');
+        alert('CV mis a jour ! Il sera visible sur le site dans quelques instants.');
+        input.value = '';
+      } catch (e) {
+        alert('Erreur : ' + e.message);
+      } finally {
+        if (btn) { btn.textContent = '\ud83d\udcc4 Mettre \u00e0 jour le CV'; btn.disabled = false; }
+      }
+    };
+    reader.readAsDataURL(file);
   }
 
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
